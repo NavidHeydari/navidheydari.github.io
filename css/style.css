@@ -138,30 +138,14 @@ body.dark-theme .contact {
     border-top-color: #333;
 }
 
-body.dark-theme .contact-form input,
-body.dark-theme .contact-form textarea {
-    border-bottom-color: #444;
+body.dark-theme .contact-link {
     color: #e0e0e0;
+    border-color: #333;
 }
 
-body.dark-theme .contact-form input:focus,
-body.dark-theme .contact-form textarea:focus {
-    border-bottom-color: #e0e0e0;
-}
-
-body.dark-theme .contact-form input::placeholder,
-body.dark-theme .contact-form textarea::placeholder {
-    color: #888;
-}
-
-body.dark-theme .submit-btn {
-    color: #e0e0e0;
-    border-color: #e0e0e0;
-}
-
-body.dark-theme .submit-btn:hover {
-    background: #e0e0e0;
-    color: #121212;
+body.dark-theme .contact-link:hover {
+    border-color: #555;
+    background: #2a2a2a;
 }
 
 body.dark-theme footer {
@@ -169,11 +153,23 @@ body.dark-theme footer {
     border-top-color: #333;
 }
 
-body.dark-theme .social-links a {
+body.dark-theme .social-icon-link {
     color: #b0b0b0;
 }
 
-body.dark-theme .social-links a:hover {
+body.dark-theme .social-icon-link:hover {
+    color: #e0e0e0;
+}
+
+body.dark-theme .social-icon-link svg {
+    filter: brightness(1.3) saturate(1.1);
+}
+
+body.dark-theme .contact-link svg {
+    filter: brightness(1.3) saturate(1.2);
+}
+
+body.dark-theme .contact-label {
     color: #e0e0e0;
 }
 
@@ -181,20 +177,21 @@ body.dark-theme footer p {
     color: #888;
 }
 
-body.dark-theme .form-message.error {
-    background: #2d1b1b !important;
-    color: #ff9999 !important;
-    border-color: #4a2c2c !important;
-}
-
-body.dark-theme .form-message.success {
-    background: #1b2d1b !important;
-    color: #99ff99 !important;
-    border-color: #2c4a2c !important;
-}
 
 body.dark-theme .competencies {
     color: #c0c0c0;
+}
+
+body.dark-theme .competencies h3 {
+    color: #f5f5f5;
+}
+
+body.dark-theme .competencies li {
+    color: #c0c0c0;
+}
+
+body.dark-theme .competencies li::before {
+    color: #888;
 }
 
 /* Theme Toggle Button */
@@ -669,59 +666,51 @@ h2::after {
     border-top: 1px solid #eee;
 }
 
-.contact-form {
+.contact-links {
     max-width: 600px;
     margin: 0 auto;
-    display: grid;
+    display: flex;
+    flex-direction: column;
     gap: 2rem;
+    align-items: center;
 }
 
-.form-group {
-    position: relative;
-}
-
-.contact-form input,
-.contact-form textarea {
+.contact-link {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem 2rem;
+    text-decoration: none;
+    color: #333;
+    border: 1px solid #eee;
+    border-radius: 2px;
+    transition: all 0.3s ease;
     width: 100%;
-    padding: 1rem 0;
-    border: none;
-    border-bottom: 1px solid #ddd;
-    background: transparent;
+    max-width: 500px;
+}
+
+.contact-link:hover {
+    border-color: #333;
+    background: #fafafa;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.contact-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.contact-icon svg {
+    display: block;
+}
+
+.contact-label {
     font-size: 1rem;
-    color: #333;
-    transition: all 0.3s ease;
-    font-family: inherit;
-}
-
-.contact-form input:focus,
-.contact-form textarea:focus {
-    outline: none;
-    border-bottom-color: #333;
-}
-
-.contact-form input::placeholder,
-.contact-form textarea::placeholder {
-    color: #999;
-    font-style: italic;
-}
-
-.submit-btn {
-    padding: 1rem 3rem;
-    background: transparent;
-    color: #333;
-    border: 1px solid #333;
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    justify-self: center;
-    font-family: inherit;
-}
-
-.submit-btn:hover {
-    background: #333;
-    color: white;
+    letter-spacing: 0.02em;
 }
 
 /* Footer */
@@ -737,19 +726,31 @@ footer {
     justify-content: center;
     gap: 2rem;
     margin-bottom: 2rem;
+    flex-wrap: wrap;
 }
 
-.social-links a {
+.social-icon-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     color: #666;
     text-decoration: none;
     font-size: 0.9rem;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    transition: color 0.3s ease;
+    transition: all 0.3s ease;
 }
 
-.social-links a:hover {
+.social-icon-link svg {
+    transition: transform 0.3s ease;
+}
+
+.social-icon-link:hover {
     color: #333;
+}
+
+.social-icon-link:hover svg {
+    transform: translateY(-2px);
 }
 
 footer p {
@@ -888,7 +889,7 @@ footer p {
         font-size: 1rem;
     }
 
-    .contact-form {
+    .contact-links {
         max-width: 500px;
     }
 }
@@ -1039,25 +1040,35 @@ footer p {
         font-size: 0.85rem;
     }
 
-    .contact-form {
-        max-width: 100%;
+    .contact-links {
         gap: 1.5rem;
+        padding: 0 1rem;
     }
 
-    .contact-form input,
-    .contact-form textarea {
+    .contact-link {
+        padding: 1.2rem 1.5rem;
+    }
+
+    .contact-icon {
+        font-size: 1.8rem;
+    }
+
+    .contact-icon svg {
+        width: 36px;
+        height: 36px;
+    }
+
+    .contact-label {
         font-size: 0.95rem;
-        padding: 0.8rem 0;
-    }
-
-    .submit-btn {
-        padding: 0.8rem 2rem;
-        font-size: 0.85rem;
     }
 
     .social-links {
-        flex-wrap: wrap;
         gap: 1.5rem;
+    }
+
+    .social-icon-link svg {
+        width: 22px;
+        height: 22px;
     }
 
     footer {
@@ -1178,24 +1189,41 @@ footer p {
         font-size: 0.8rem;
     }
 
-    .contact-form {
+    .contact-links {
         gap: 1.2rem;
     }
 
-    .submit-btn {
-        padding: 0.7rem 1.5rem;
-        font-size: 0.8rem;
-        width: 100%;
-        max-width: 250px;
+    .contact-link {
+        padding: 1rem 1.2rem;
+        flex-direction: column;
+        text-align: center;
+        gap: 0.5rem;
+    }
+
+    .contact-icon {
+        font-size: 1.5rem;
+    }
+
+    .contact-icon svg {
+        width: 32px;
+        height: 32px;
+    }
+
+    .contact-label {
+        font-size: 0.85rem;
     }
 
     .social-links {
-        flex-direction: column;
-        gap: 1rem;
+        gap: 1.5rem;
     }
 
-    .social-links a {
+    .social-icon-link {
         font-size: 0.85rem;
+    }
+
+    .social-icon-link svg {
+        width: 20px;
+        height: 20px;
     }
 
     footer p {
@@ -1213,16 +1241,14 @@ footer p {
         justify-content: center;
     }
 
-    .submit-btn {
+    .contact-link {
         min-height: 44px;
         padding: 1rem 2rem;
     }
 
-    .social-links a {
+    .social-icon-link {
         min-height: 44px;
         padding: 0.5rem;
-        display: flex;
-        align-items: center;
     }
 
     .skill-item,
