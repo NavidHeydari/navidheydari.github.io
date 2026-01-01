@@ -133,78 +133,6 @@ document.querySelectorAll('.fade-in').forEach(el => {
     observer.observe(el);
 });
 
-// Enhanced contact form with better mobile experience
-document.getElementById('contactForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-
-    const formData = new FormData(this);
-    const name = formData.get('name').trim();
-    const email = formData.get('email').trim();
-    const subject = formData.get('subject').trim();
-    const message = formData.get('message').trim();
-
-    // Enhanced validation
-    if (!name || !email || !subject || !message) {
-        showFormMessage('Please fill in all fields', 'error');
-        return;
-    }
-
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-        showFormMessage('Please enter a valid email address', 'error');
-        return;
-    }
-
-    const submitBtn = this.querySelector('.submit-btn');
-    const originalText = submitBtn.textContent;
-    submitBtn.textContent = 'Sending...';
-    submitBtn.disabled = true;
-
-    // Simulate form submission
-    setTimeout(() => {
-        showFormMessage('Thank you for your message. I\'ll get back to you soon.', 'success');
-        this.reset();
-        submitBtn.textContent = originalText;
-        submitBtn.disabled = false;
-    }, 1500);
-});
-
-// Form message display function
-function showFormMessage(message, type) {
-    // Remove existing message
-    const existingMessage = document.querySelector('.form-message');
-    if (existingMessage) {
-        existingMessage.remove();
-    }
-
-    const messageEl = document.createElement('div');
-    messageEl.className = `form-message ${type}`;
-    messageEl.textContent = message;
-    messageEl.style.cssText = `
-        padding: 1rem;
-        margin-bottom: 1rem;
-        border-radius: 2px;
-        text-align: center;
-        font-size: 0.9rem;
-        transition: all 0.3s ease;
-        ${type === 'error' ?
-            'background: #fee; color: #c33; border: 1px solid #fcc;' :
-            'background: #efe; color: #363; border: 1px solid #cfc;'
-        }
-    `;
-
-    const form = document.getElementById('contactForm');
-    form.insertBefore(messageEl, form.firstChild);
-
-    // Auto-remove after 5 seconds
-    setTimeout(() => {
-        if (messageEl.parentNode) {
-            messageEl.remove();
-        }
-    }, 5000);
-}
-
 // Optimized parallax for mobile (reduced effect)
 let ticking = false;
 
@@ -244,21 +172,4 @@ const timelineObserver = new IntersectionObserver(function(entries) {
 
 timelineItems.forEach(item => {
     timelineObserver.observe(item);
-});
-
-// Prevent zoom on input focus (iOS)
-document.querySelectorAll('input, textarea').forEach(input => {
-    input.addEventListener('focus', function() {
-        if (window.innerWidth <= 768) {
-            const viewport = document.querySelector('meta[name=viewport]');
-            viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
-        }
-    });
-
-    input.addEventListener('blur', function() {
-        if (window.innerWidth <= 768) {
-            const viewport = document.querySelector('meta[name=viewport]');
-            viewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
-        }
-    });
 });
