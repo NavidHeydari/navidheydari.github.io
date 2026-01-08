@@ -251,4 +251,4 @@ For questions or issues:
 
 ---
 
-**Made with ❤️ for developers who want a simple, fast portfolio**
+**Made with ❤️ for developers who want a simple, fast portfolio Structure - Navid Heydari**
