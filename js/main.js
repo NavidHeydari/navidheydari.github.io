@@ -29,64 +29,74 @@ function updateThemeIcon() {
 // Initialize theme icon
 updateThemeIcon();
 
-// Enhanced mobile navigation
-let isMenuToggled = false;
+// Hamburger menu navigation
+const nav = document.querySelector('nav');
+const hamburger = document.getElementById('hamburgerMenu');
 
-// Add mobile menu toggle for very small screens
-function createMobileMenu() {
-    if (window.innerWidth <= 480 && !document.querySelector('.mobile-menu-toggle')) {
-        const nav = document.querySelector('nav');
-        const navUl = nav.querySelector('ul');
+function isMenuOpen() {
+    return nav.classList.contains('menu-open');
+}
 
-        // Create mobile menu toggle
-        const menuToggle = document.createElement('div');
-        menuToggle.className = 'mobile-menu-toggle';
-        menuToggle.innerHTML = '☰';
-        menuToggle.style.cssText = `
-            display: block;
-            text-align: center;
-            padding: 1rem;
-            cursor: pointer;
-            font-size: 1.2rem;
-            color: #666;
-            user-select: none;
-        `;
+function openMenu() {
+    nav.classList.add('menu-open');
+    hamburger.setAttribute('aria-expanded', 'true');
+    document.body.style.overflow = 'hidden';
+}
 
-        // Initially hide the menu
-        navUl.style.display = 'none';
-
-        menuToggle.addEventListener('click', function() {
-            isMenuToggled = !isMenuToggled;
-            navUl.style.display = isMenuToggled ? 'flex' : 'none';
-            menuToggle.innerHTML = isMenuToggled ? '✕' : '☰';
-        });
-
-        // Close menu when clicking on a link
-        navUl.addEventListener('click', function() {
-            if (window.innerWidth <= 480) {
-                isMenuToggled = false;
-                navUl.style.display = 'none';
-                menuToggle.innerHTML = '☰';
-            }
-        });
-
-        nav.insertBefore(menuToggle, navUl);
-    } else if (window.innerWidth > 480) {
-        // Remove mobile menu toggle on larger screens
-        const menuToggle = document.querySelector('.mobile-menu-toggle');
-        if (menuToggle) {
-            menuToggle.remove();
-            document.querySelector('nav ul').style.display = 'flex';
-        }
+function closeMenu(returnFocus) {
+    nav.classList.remove('menu-open');
+    hamburger.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+    if (returnFocus) {
+        hamburger.focus();
     }
 }
 
-// Initialize mobile menu
-createMobileMenu();
+// Toggle menu on hamburger click
+hamburger.addEventListener('click', function(e) {
+    e.stopPropagation();
+    if (isMenuOpen()) {
+        closeMenu(false);
+    } else {
+        openMenu();
+    }
+});
 
-// Handle window resize
+// Close menu when a nav link is clicked
+nav.querySelectorAll('a').forEach(function(link) {
+    link.addEventListener('click', function() {
+        closeMenu(false);
+    });
+});
+
+// Close menu on Escape key and return focus to hamburger
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && isMenuOpen()) {
+        closeMenu(true);
+    }
+});
+
+// Close menu when focus leaves the nav (keyboard tab-out)
+nav.addEventListener('focusout', function() {
+    setTimeout(function() {
+        if (!nav.contains(document.activeElement) && isMenuOpen()) {
+            closeMenu(false);
+        }
+    }, 0);
+});
+
+// Close menu when clicking outside the nav
+document.addEventListener('click', function(e) {
+    if (!nav.contains(e.target) && isMenuOpen()) {
+        closeMenu(false);
+    }
+});
+
+// Reset menu state if window is resized above the mobile breakpoint
 window.addEventListener('resize', function() {
-    createMobileMenu();
+    if (window.innerWidth > 768 && isMenuOpen()) {
+        closeMenu(false);
+    }
 });
 
 // Smooth scrolling with offset for fixed nav
