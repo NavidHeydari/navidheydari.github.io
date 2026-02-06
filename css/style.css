@@ -355,8 +355,9 @@ nav a:hover::after {
 .scroll-indicator {
     position: absolute;
     bottom: 2rem;
-    left: 50%;
-    transform: translateX(-50%);
+    left: 0;
+    right: 0;
+    text-align: center;
     color: #999;
     font-size: 0.8rem;
     text-transform: uppercase;
@@ -369,6 +370,7 @@ nav a:hover::after {
     content: '↓';
     display: block;
     margin-top: 0.5rem;
+    font-size: 1rem;
     animation: bounce 2s infinite;
 }
 
@@ -928,6 +930,14 @@ footer p {
     nav a {
         font-size: 0.8rem;
         padding: 0.5rem;
+    }
+
+    .scroll-text {
+        display: none;
+    }
+
+    .scroll-indicator::after {
+        margin-top: 0;
     }
 
     .hero {
