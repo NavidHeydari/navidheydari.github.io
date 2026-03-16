@@ -1,0 +1,13 @@
+{
+  "name": "navidheydari-portfolio",
+  "version": "1.0.0",
+  "description": "Personal portfolio website",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "dev": "tsc --watch & python3 -m http.server 8000"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
+}

@@ -1,13 +1,14 @@
-"use strict";
 // Theme Toggle Functionality
-const themeToggle = document.getElementById('themeToggle');
+const themeToggle = document.getElementById('themeToggle') as HTMLButtonElement;
 const body = document.body;
+
 // Check for saved theme preference or default to light
 const savedTheme = localStorage.getItem('theme');
 if (savedTheme) {
     body.classList.toggle('dark-theme', savedTheme === 'dark');
     updateThemeIcon();
 }
+
 // Theme toggle click handler
 themeToggle.addEventListener('click', function () {
     body.classList.toggle('dark-theme');
@@ -15,26 +16,34 @@ themeToggle.addEventListener('click', function () {
     localStorage.setItem('theme', isDark ? 'dark' : 'light');
     updateThemeIcon();
 });
+
 // Update theme icon
-function updateThemeIcon() {
+function updateThemeIcon(): void {
     const isDark = body.classList.contains('dark-theme');
     themeToggle.textContent = isDark ? '☀️' : '🌙';
-    themeToggle.setAttribute('aria-label', isDark ? 'Switch to light theme' : 'Switch to dark theme');
+    themeToggle.setAttribute('aria-label',
+        isDark ? 'Switch to light theme' : 'Switch to dark theme'
+    );
 }
+
 // Initialize theme icon
 updateThemeIcon();
+
 // Hamburger menu navigation
-const nav = document.querySelector('nav');
-const hamburger = document.getElementById('hamburgerMenu');
-function isMenuOpen() {
+const nav = document.querySelector('nav') as HTMLElement;
+const hamburger = document.getElementById('hamburgerMenu') as HTMLButtonElement;
+
+function isMenuOpen(): boolean {
     return nav.classList.contains('menu-open');
 }
-function openMenu() {
+
+function openMenu(): void {
     nav.classList.add('menu-open');
     hamburger.setAttribute('aria-expanded', 'true');
     document.body.style.overflow = 'hidden';
 }
-function closeMenu(returnFocus) {
+
+function closeMenu(returnFocus: boolean): void {
     nav.classList.remove('menu-open');
     hamburger.setAttribute('aria-expanded', 'false');
     document.body.style.overflow = '';
@@ -42,28 +51,31 @@ function closeMenu(returnFocus) {
         hamburger.focus();
     }
 }
+
 // Toggle menu on hamburger click
-hamburger.addEventListener('click', function (e) {
+hamburger.addEventListener('click', function (e: MouseEvent) {
     e.stopPropagation();
     if (isMenuOpen()) {
         closeMenu(false);
-    }
-    else {
+    } else {
         openMenu();
     }
 });
+
 // Close menu when a nav link is clicked
-nav.querySelectorAll('a').forEach(function (link) {
+nav.querySelectorAll('a').forEach(function (link: Element) {
     link.addEventListener('click', function () {
         closeMenu(false);
     });
 });
+
 // Close menu on Escape key and return focus to hamburger
-document.addEventListener('keydown', function (e) {
+document.addEventListener('keydown', function (e: KeyboardEvent) {
     if (e.key === 'Escape' && isMenuOpen()) {
         closeMenu(true);
     }
 });
+
 // Close menu when focus leaves the nav (keyboard tab-out)
 nav.addEventListener('focusout', function () {
     setTimeout(function () {
@@ -72,27 +84,31 @@ nav.addEventListener('focusout', function () {
         }
     }, 0);
 });
+
 // Close menu when clicking outside the nav
-document.addEventListener('click', function (e) {
-    if (!nav.contains(e.target) && isMenuOpen()) {
+document.addEventListener('click', function (e: MouseEvent) {
+    if (!nav.contains(e.target as Node) && isMenuOpen()) {
         closeMenu(false);
     }
 });
+
 // Reset menu state if window is resized above the mobile breakpoint
 window.addEventListener('resize', function () {
     if (window.innerWidth > 768 && isMenuOpen()) {
         closeMenu(false);
     }
 });
+
 // Smooth scrolling with offset for fixed nav
-document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
-    anchor.addEventListener('click', function (e) {
+document.querySelectorAll('a[href^="#"]').forEach((anchor: Element) => {
+    anchor.addEventListener('click', function (this: HTMLAnchorElement, e: Event) {
         e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
+        const target = document.querySelector(this.getAttribute('href') as string);
         if (target) {
-            const navEl = document.querySelector('nav');
+            const navEl = document.querySelector('nav') as HTMLElement;
             const navHeight = navEl.offsetHeight;
-            const targetPosition = target.offsetTop - navHeight - 20;
+            const targetPosition = (target as HTMLElement).offsetTop - navHeight - 20;
+
             window.scrollTo({
                 top: targetPosition,
                 behavior: 'smooth'
@@ -100,18 +116,21 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
         }
     });
 });
+
 // Enhanced scroll animations with better performance
-const observerOptions = {
+const observerOptions: IntersectionObserverInit = {
     threshold: 0.1,
     rootMargin: '0px 0px -50px 0px'
 };
-const observer = new IntersectionObserver(function (entries) {
-    entries.forEach((entry) => {
+
+const observer = new IntersectionObserver(function (entries: IntersectionObserverEntry[]) {
+    entries.forEach((entry: IntersectionObserverEntry) => {
         if (entry.isIntersecting) {
             entry.target.classList.add('visible');
+
             // Animate children with delay for better mobile performance
             const children = entry.target.querySelectorAll('.skill-item, .project-card, .timeline-item');
-            children.forEach((child, index) => {
+            children.forEach((child: Element, index: number) => {
                 setTimeout(() => {
                     child.classList.add('visible');
                 }, window.innerWidth <= 768 ? index * 100 : index * 150);
@@ -119,40 +138,49 @@ const observer = new IntersectionObserver(function (entries) {
         }
     });
 }, observerOptions);
+
 // Observe elements
-document.querySelectorAll('.fade-in').forEach((el) => {
+document.querySelectorAll('.fade-in').forEach((el: Element) => {
     observer.observe(el);
 });
+
 // Optimized parallax for mobile (reduced effect)
 let ticking = false;
-function updateParallax() {
+
+function updateParallax(): void {
     const scrolled = window.pageYOffset;
-    const hero = document.querySelector('.hero');
+    const hero = document.querySelector('.hero') as HTMLElement | null;
     const speed = window.innerWidth <= 768 ? scrolled * 0.1 : scrolled * 0.2;
+
     if (hero) {
         hero.style.transform = `translateY(${speed}px)`;
     }
+
     ticking = false;
 }
+
 window.addEventListener('scroll', function () {
     if (!ticking) {
         requestAnimationFrame(updateParallax);
         ticking = true;
     }
 });
+
 // Enhanced timeline animation for mobile
 const timelineItems = document.querySelectorAll('.timeline-item');
-const timelineObserver = new IntersectionObserver(function (entries) {
-    entries.forEach((entry) => {
+const timelineObserver = new IntersectionObserver(function (entries: IntersectionObserverEntry[]) {
+    entries.forEach((entry: IntersectionObserverEntry) => {
         if (entry.isIntersecting) {
             const index = Array.from(timelineItems).indexOf(entry.target);
             const delay = window.innerWidth <= 768 ? index * 150 : index * 200;
+
             setTimeout(() => {
                 entry.target.classList.add('visible');
             }, delay);
         }
     });
 }, observerOptions);
-timelineItems.forEach((item) => {
+
+timelineItems.forEach((item: Element) => {
     timelineObserver.observe(item);
 });
