@@ -1,0 +1,57 @@
+{{ define "title" }}Blog — {{ .Site.Params.author }}{{ end }}
+
+{{ define "main" }}
+<main class="blog-container">
+    <section class="blog-header fade-in">
+        <h2>Blog</h2>
+        <p class="blog-subtitle">Thoughts on architecture, AI, and engineering at scale.</p>
+    </section>
+
+    <div class="blog-controls fade-in">
+        <input type="text" id="searchInput" class="search-input" placeholder="Search posts…" aria-label="Search posts">
+        <div class="tag-filters" id="tagFilters">
+            <button class="tag-filter active" data-tag="all">All</button>
+            {{ $tags := slice }}
+            {{ range .Pages }}
+                {{ range .Params.tags }}
+                    {{ $tags = $tags | append . }}
+                {{ end }}
+            {{ end }}
+            {{ range ($tags | uniq | sort) }}
+            <button class="tag-filter" data-tag="{{ . }}">{{ . }}</button>
+            {{ end }}
+        </div>
+    </div>
+
+    <div class="posts-grid" id="postsGrid">
+        {{ range .Pages.ByDate.Reverse }}
+        <article class="post-card fade-in"
+                 data-tags="{{ with .Params.tags }}{{ delimit . "," }}{{ end }}"
+                 data-title="{{ lower .Title }}"
+                 data-excerpt="{{ lower .Description }}">
+            <div class="post-card-content">
+                <div class="post-card-meta">
+                    <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "Jan 2, 2006" }}</time>
+                    <span class="reading-time">{{ .ReadingTime }} min read</span>
+                </div>
+                <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
+                <p class="post-excerpt">{{ .Description }}</p>
+                {{ with .Params.tags }}
+                <div class="post-tags">
+                    {{ range . }}
+                    <span class="tag">{{ . }}</span>
+                    {{ end }}
+                </div>
+                {{ end }}
+            </div>
+        </article>
+        {{ end }}
+    </div>
+
+    <p class="no-results" id="noResults" style="display:none;">No posts match your search.</p>
+</main>
+{{ end }}
+
+{{ define "scripts" }}
+<script src="/js/blog.js"></script>
+{{ end }}

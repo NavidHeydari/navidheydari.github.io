@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ block "title" . }}{{ .Site.Title }}{{ end }}</title>
+    {{- with .Description }}<meta name="description" content="{{ . }}">{{ end }}
+    {{- with .Site.Params.description }}<meta name="description" content="{{ . }}">{{ end }}
+    <link rel="stylesheet" href="/css/style.css">
+    {{ block "head" . }}{{ end }}
+</head>
+<body>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark theme">
+        🌙
+    </button>
+
+    {{ partial "nav.html" . }}
+
+    {{ block "main" . }}{{ end }}
+
+    {{ partial "footer.html" . }}
+
+    <script src="/js/main.js"></script>
+    {{ block "scripts" . }}{{ end }}
+</body>
+</html>
