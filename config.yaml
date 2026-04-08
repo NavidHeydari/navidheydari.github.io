@@ -1,0 +1,25 @@
+baseURL: https://navidheydari.github.io/
+languageCode: en-us
+build:
+  writeStats: true
+
+ignoreLogs:
+  - warning-goldmark-raw-html
+title: Navid Heydari - Principal Architect (AI Architect)
+theme: aafu
+
+params:
+  author: Navid Heydari
+  description: Principal Architect (AI Architect) — technology leader designing and scaling cloud-native enterprise systems.
+  copyright: powered by [hugo](https://gohugo.io/)
+  theme:
+    mainTheme: dark
+    showAttribute: true
+    singlePage: false
+  accordion:
+    - item: about_me
+      expand: true
+    - item: experiences
+    - item: education
+    - item: skills
+      panel_id: skill-panel
