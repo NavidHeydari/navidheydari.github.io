@@ -1,0 +1,12 @@
+# Hugo build output
+public/
+resources/_gen/
+
+# Node.js (old TypeScript build system — no longer used)
+node_modules/
+scripts/dist/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
