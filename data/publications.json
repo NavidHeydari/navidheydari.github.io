@@ -1,0 +1,15 @@
+{
+  "title": "Publications",
+  "icon": "bi bi-journal-text",
+  "format": ["title", "venue"],
+  "list": [
+    {
+      "title": "[Enhancing Observability of Serverless Computing with the Serverless Application Analytics Framework](https://dl.acm.org/doi/10.1145/3447545.3451173)",
+      "venue": "ACM Conference / ICPE, 2021"
+    },
+    {
+      "title": "[Characterizing X86 and ARM Serverless Performance Variation: A Natural Language Processing Case Study](https://dl.acm.org/doi/10.1145/3491204.3543506)",
+      "venue": "ACM Conference / ICPE, 2022"
+    }
+  ]
+}

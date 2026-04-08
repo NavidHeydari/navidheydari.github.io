@@ -11,7 +11,7 @@ theme: aafu
 params:
   author: Navid Heydari
   description: Principal Architect (AI Architect) — technology leader designing and scaling cloud-native enterprise systems.
-  copyright: powered by [hugo](https://gohugo.io/)
+  copyright: "powered by [hugo](https://gohugo.io/) — © Navid Heydari"
   theme:
     mainTheme: dark
     showAttribute: true
@@ -21,5 +21,6 @@ params:
       expand: true
     - item: experiences
     - item: education
+    - item: publications
     - item: skills
       panel_id: skill-panel
