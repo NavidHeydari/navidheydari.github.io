@@ -101,4 +101,25 @@
       @apply my-0 p-2 hover:bg-gray-300 rounded-sm dark:hover:bg-darker;
     }
   }
+  /* Scrollable accordion content */
+  .panel [class*="overflow-y-auto"] {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(156 163 175) transparent;
+  }
+  .dark .panel [class*="overflow-y-auto"] {
+    scrollbar-color: rgb(75 85 99) transparent;
+  }
+  .panel [class*="overflow-y-auto"]::-webkit-scrollbar {
+    width: 5px;
+  }
+  .panel [class*="overflow-y-auto"]::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .panel [class*="overflow-y-auto"]::-webkit-scrollbar-thumb {
+    background-color: rgb(156 163 175);
+    border-radius: 9999px;
+  }
+  .dark .panel [class*="overflow-y-auto"]::-webkit-scrollbar-thumb {
+    background-color: rgb(75 85 99);
+  }
 }
