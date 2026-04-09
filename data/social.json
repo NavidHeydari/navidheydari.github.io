@@ -1,0 +1,22 @@
+[
+  {
+    "icon": "bi bi-linkedin",
+    "url": "https://www.linkedin.com/in/navidheydari",
+    "title": "LinkedIn"
+  },
+  {
+    "icon": "bi bi-github",
+    "url": "https://github.com/NavidHeydari",
+    "title": "GitHub"
+  },
+  {
+    "icon": "bi bi-twitter-x",
+    "url": "https://x.com/untraindObsrver",
+    "title": "Twitter/X"
+  },
+  {
+    "icon": "bi bi-envelope",
+    "url": "mailto:navid.heidary@gmail.com",
+    "title": "Email"
+  }
+]

@@ -1,0 +1,27 @@
+{
+  "title": "Skills",
+  "panelId": "skill-panel",
+  "icon": "bi bi-list-check",
+  "list": [
+    {
+      "skill": "ML & AI — MLFlow (Databricks), Snowflakes, PySpark, PyTorch-Geometrics (GNN), TensorFlow, RAG-based design, LLM-based, Vector database (Chroma, PineCone, etc.), Time-series LSTM, Agentic Architecture",
+      "skillrating": 90
+    },
+    {
+      "skill": "Languages — Java, Python",
+      "skillrating": 95
+    },
+    {
+      "skill": "Cloud & DevOps — Cloud Foundry, K8s & Docker, AWS (ElasticSearch, Lambda, S3, CloudWatch,CloudFormation, SNS/SQS), Jenkins, Prometheus, Terraform, Azure AI-Studio, GCP Compute clickhouse, Azure Kusto",
+      "skillrating": 95
+    },
+    {
+      "skill": "Frameworks & Tools — Spring Boot, Maven, Bash, Hadoop, Redis, RabbitMQ, Kafka, Apigee, CouchDB, Grafana, OpenWhisks|IBM Bluemix",
+      "skillrating": 95
+    },
+    {
+      "skill": "Misc. — R, C(90 & 99), C++, Assembly(AVR $ 8086), Go, TypeScript, TCL, JavaScript Angular, MongoDB",
+      "skillrating": 85
+    }
+  ]
+}

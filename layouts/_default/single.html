@@ -1,27 +1,14 @@
-{{ define "title" }}{{ .Title }} — {{ .Site.Params.author }}{{ end }}
-
 {{ define "main" }}
-<main class="post-container">
-    <article class="post-article">
-        <header class="post-header">
-            <a href="/posts/" class="back-link">&larr; Back to Blog</a>
-            <h1>{{ .Title }}</h1>
-            <div class="post-meta">
-                <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
-                <span class="reading-time">{{ .ReadingTime }} min read</span>
-            </div>
-            {{ with .Params.tags }}
-            <div class="post-tags">
-                {{ range . }}
-                <a href="/tags/{{ . | urlize }}/" class="tag">{{ . }}</a>
-                {{ end }}
-            </div>
-            {{ end }}
-        </header>
-
-        <div class="post-content">
-            {{ .Content }}
-        </div>
-    </article>
-</main>
+{{ .Scratch.Set "figure_count" 1 }}
+<div class="prose prose-stone dark:prose-invert max-w-none">
+<div class="mb-3">
+  <h1 class="top-h1">{{- .Title -}}</h1>
+  <p class="mb-1">{{ .Date.Format "January 2, 2006" }}</p>
+  <p>&mdash;</p>
+</div>
+<div class="content">
+  {{ .Content }}
+</div>
+</div>
+{{ partial "prevnext" . }}
 {{ end }}

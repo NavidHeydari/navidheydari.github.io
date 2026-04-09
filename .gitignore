@@ -2,9 +2,8 @@
 public/
 resources/_gen/
 
-# Node.js (old TypeScript build system — no longer used)
+# Node.js (TailwindCSS dependencies)
 node_modules/
-scripts/dist/
 
 # OS / editor
 .DS_Store

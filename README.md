@@ -1,254 +1,146 @@
-# Personal Portfolio Website
+# Navid Heydari — Personal Portfolio
 
-A lightweight, responsive portfolio website designed for easy deployment to GitHub Pages. Built with clean HTML, CSS, and JavaScript - no frameworks or build tools required.
+Personal portfolio website built with [Hugo](https://gohugo.io/). Features a clean accordion-style layout with dark/light theme support, powered by Tailwind CSS v4.
 
-## Features
+## Tech Stack
 
-- ✨ **Minimal & Clean Design** - Professional, typography-focused layout
-- 🌓 **Dark/Light Theme** - Toggle between themes with persistent preference
-- 📱 **Fully Responsive** - Optimized for all screen sizes (mobile, tablet, desktop)
-- ⚡ **Fast Loading** - No external dependencies, pure vanilla JavaScript
-- 🎨 **Smooth Animations** - Subtle scroll animations and transitions
-- 📝 **Easy to Update** - Modular structure for quick content updates
+- **Hugo extended** v0.160.1 — static site generator
+- **Tailwind CSS** v4.2.2 — utility-first CSS framework
+- **@tailwindcss/typography** v0.5.19 — prose styling for content pages
+- **Bootstrap Icons** v1.13.1 — icon set (CDN)
+- **GitHub Pages** — hosting via GitHub Actions
 
 ## Project Structure
 
 ```
-portfolio-site/
-├── index.html          # Main HTML file with content
-├── css/
-│   └── style.css       # All styles and responsive design
-├── js/
-│   └── main.js         # Interactive features and animations
-├── deploy.sh           # Automated deployment script
-└── README.md           # This file
+navidheydari.github.io/
+├── config.yaml                     # Hugo site configuration and accordion settings
+├── package.json                    # npm dependencies (Tailwind CSS)
+├── package-lock.json               # locked dependency versions
+├── tailwind.config.js              # Tailwind CSS configuration
+├── assets/
+│   └── main.css                    # Tailwind CSS entry point + custom gold theme tokens
+├── content/
+│   └── _index.md                   # Homepage metadata
+├── data/
+│   ├── profile.json                # Name, tagline, location, photo
+│   ├── about_me.json               # About section text
+│   ├── social.json                 # Social media links
+│   ├── experiences.json            # Work experience entries
+│   ├── education.json              # Education entries
+│   ├── skills.json                 # Skills with proficiency ratings
+│   └── publications.json           # Academic publications
+├── layouts/
+│   ├── index.html                  # Homepage (two-column: profile + accordion)
+│   ├── 404.html                    # 404 page
+│   ├── _default/
+│   │   ├── baseof.html             # Base HTML shell
+│   │   ├── single.html             # Blog post template
+│   │   ├── list.html               # Blog/tag/category list template
+│   │   └── search.html             # Search results page
+│   ├── partials/
+│   │   ├── head.html               # <head> with CSS, fonts, inline JS
+│   │   ├── header.html             # Top navigation bar
+│   │   ├── footer.html             # Footer with copyright
+│   │   ├── social.html             # Social links from data/social.json
+│   │   ├── profilePhoto.html       # Profile image
+│   │   ├── metadata.html           # Post date, reading time, tags
+│   │   ├── prevnext.html           # Previous/Next post navigation
+│   │   ├── toggleTheme.html        # Dark/light theme toggle logic
+│   │   └── accordion/
+│   │       ├── about_me.html
+│   │       ├── experiences.html
+│   │       ├── education.html
+│   │       ├── skills.html
+│   │       ├── publications.html
+│   │       ├── projects.html
+│   │       └── hobbies.html
+│   └── shortcodes/
+│       ├── figure.html             # Enhanced image/figure shortcode
+│       └── raw_html.html           # Raw HTML embed shortcode
+├── static/
+│   ├── favicon.ico
+│   └── images/
+│       └── profile_pic.jpg         # Profile photo
+└── .github/
+    └── workflows/
+        └── deploy.yml              # GitHub Actions — build & deploy to Pages
 ```
 
-## Quick Start
+## Local Development
 
-### 1. Customize Your Content
+### Prerequisites
 
-Edit `index.html` to update:
-- Your name and title
-- About section
-- Skills and competencies
-- Professional experience
-- Education and publications
-- Contact information
-- Social media links
+- Hugo extended v0.160.1+ — [install guide](https://gohugo.io/installation/)
+- Node.js v22 / npm
 
-### 2. Preview Locally
+### Setup
 
-Simply open `index.html` in your web browser to preview your changes.
-
-Alternatively, use a local server:
 ```bash
-# Using Python 3
-python -m http.server 8000
+git clone https://github.com/NavidHeydari/navidheydari.github.io.git
+cd navidheydari.github.io
 
-# Using Python 2
-python -m SimpleHTTPServer 8000
-
-# Using Node.js (if you have http-server installed)
-npx http-server
+# Install Tailwind CSS dependencies
+npm install
 ```
 
-Then visit `http://localhost:8000` in your browser.
+### Run locally
 
-## Deployment to GitHub Pages
-
-### Option 1: Automated Deployment (Recommended)
-
-1. Create a new repository on GitHub (e.g., `my-portfolio`)
-
-2. Run the deployment script:
 ```bash
-cd portfolio-site
-./deploy.sh
+hugo server
 ```
 
-3. Follow the prompts to enter your GitHub repository URL
+Open `http://localhost:1313/` in your browser. The server watches all files and live-reloads on change.
 
-4. Enable GitHub Pages:
-   - Go to your repository on GitHub
-   - Click **Settings** > **Pages**
-   - Under **Source**, select the `main` branch
-   - Select **/ (root)** as the folder
-   - Click **Save**
+## Updating Content
 
-5. Your site will be live at: `https://navid.heydari.github.io/navidheydari/`
+All portfolio content is driven by JSON files in `data/` — no template editing needed for content changes.
 
-### Option 2: Manual Deployment
+| File | What it controls |
+|---|---|
+| `data/profile.json` | Name, tagline, location, profile photo filename |
+| `data/about_me.json` | About Me section description |
+| `data/social.json` | Social/contact links (LinkedIn, GitHub, etc.) |
+| `data/experiences.json` | Work experience entries |
+| `data/education.json` | Education history |
+| `data/skills.json` | Skills with proficiency ratings (0–100) |
+| `data/publications.json` | Academic publications |
 
-1. Create a new repository on GitHub
+### Accordion sections
 
-2. Initialize git and push your code:
-```bash
-cd portfolio-site
-git init
-git add .
-git commit -m "Initial portfolio commit"
-git branch -M main
-git remote add origin https://github.com/NavidHeydari/navidheydari.git
-git push -u origin main
+Which sections appear and in what order is controlled by `config.yaml` under `params.accordion`:
+
+```yaml
+params:
+  accordion:
+    - item: about_me
+      expand: true   # expanded by default
+    - item: experiences
+    - item: education
+    - item: publications
+    - item: skills
+      panel_id: skill-panel
 ```
 
-3. Enable GitHub Pages (same as Option 1, step 4)
+Available section names: `about_me`, `experiences`, `education`, `publications`, `skills`, `projects`, `hobbies`.
 
-## Updating Your Portfolio
+### Theme (dark/light)
 
-### Updating Content
+Default theme is set in `config.yaml` via `params.theme.mainTheme: dark`. Users can toggle with the sun/moon icon in the header. The preference is saved to `localStorage`.
 
-1. Edit `index.html` with your new content
-2. Test locally by opening the file in a browser
-3. Deploy changes:
-```bash
-./deploy.sh
-```
+### Colour scheme
 
-### Customizing Styles
-
-1. Edit `css/style.css` to modify:
-   - Colors and theme
-   - Typography and fonts
-   - Spacing and layout
-   - Animations and transitions
-
-2. Test and deploy:
-```bash
-./deploy.sh
-```
-
-### Adding New Features
-
-1. Edit `js/main.js` to add interactivity
-2. Test thoroughly in different browsers
-3. Deploy when ready
-
-## Content Update Guide
-
-### Adding New Experience
-
-In `index.html`, find the `#experience` section and add:
-
-```html
-<div class="timeline-item">
-    <h3>Job Title</h3>
-    <h4>Company Name, Location • Start Date — End Date</h4>
-    <p>Brief description of your role and achievements.</p>
-    <ul>
-        <li>Key achievement or responsibility</li>
-        <li>Another important contribution</li>
-    </ul>
-</div>
-```
-
-### Adding New Skills
-
-In the `#skills` section:
-
-```html
-<div class="skill-item">
-    <span class="skill-icon">🎯</span>
-    <h3>Skill Category</h3>
-    <p>List of technologies, tools, or expertise</p>
-</div>
-```
-
-### Updating Social Links
-
-In the `<footer>` section:
-
-```html
-<div class="social-links">
-    <a href="https://linkedin.com/in/navidheydari" target="_blank">LinkedIn</a>
-    <a href="https://github.com/navidheydari" target="_blank">GitHub</a>
-    <a href="mailto:your.email@example.com">Email</a>
-</div>
-```
-
-## Customization Tips
-
-### Changing Theme Colors
-
-Edit `css/style.css`:
+The accent colour in dark mode is gold, defined as CSS custom properties in `assets/main.css`:
 
 ```css
-/* Light theme */
-body {
-    background: #fafafa;  /* Change background */
-    color: #333;           /* Change text color */
-}
-
-/* Dark theme */
-body.dark-theme {
-    background: #121212;  /* Change dark background */
-    color: #e0e0e0;       /* Change dark text color */
+@theme {
+  --color-gold-300: #D4AF37;   /* primary accent — links, borders, icons */
+  --color-gold-500: #B8860B;   /* hover/secondary — accordion text, skill bars */
 }
 ```
 
-### Changing Fonts
+## Deployment
 
-Add to the `<head>` section in `index.html`:
+The site deploys automatically to GitHub Pages when a commit is pushed to the `main` branch. The workflow (`.github/workflows/deploy.yml`) installs Hugo extended and npm dependencies before building.
 
-```html
-<link href="https://fonts.googleapis.com/css2?family=Your+Font:wght@300;400&display=swap" rel="stylesheet">
-```
-
-Then update in `css/style.css`:
-
-```css
-body {
-    font-family: 'Your Font', serif;
-}
-```
-
-## Browser Support
-
-- ✅ Chrome/Edge (latest)
-- ✅ Firefox (latest)
-- ✅ Safari (latest)
-- ✅ Mobile browsers (iOS Safari, Chrome Mobile)
-
-## Performance
-
-- 🚀 No external dependencies
-- 📦 Total size: ~50KB (HTML + CSS + JS)
-- ⚡ Loads in under 1 second on average connection
-- 🎯 Optimized for Core Web Vitals
-
-## Troubleshooting
-
-### Site not updating after deployment?
-- Clear browser cache (Ctrl+Shift+R or Cmd+Shift+R)
-- GitHub Pages can take 1-2 minutes to reflect changes
-
-### Animations not working?
-- Check browser console for JavaScript errors
-- Ensure `js/main.js` is properly linked in `index.html`
-
-### Responsive design issues?
-- Test with browser DevTools responsive mode
-- Check for overriding CSS in `style.css`
-
-## Contributing
-
-This is a personal portfolio template. Feel free to:
-- Fork and customize for your own use
-- Submit issues for bugs
-- Suggest improvements
-
-## License
-
-Free to use for personal and commercial projects. No attribution required.
-
-## Support
-
-For questions or issues:
-1. Check the Troubleshooting section
-2. Review the code comments in each file
-3. Create an issue on GitHub
-
----
-
-**Made with ❤️ for developers who want a simple, fast portfolio Structure - Navid Heydari**
+To trigger a manual deploy, use the **Run workflow** button in the GitHub Actions tab.
