@@ -101,25 +101,31 @@
       @apply my-0 p-2 hover:bg-gray-300 rounded-sm dark:hover:bg-darker;
     }
   }
-  /* Scrollable accordion content */
-  .panel [class*="overflow-y-auto"] {
+  /* Scrollable accordion content (inner panels) and the accordion column itself */
+  .panel [class*="overflow-y-auto"],
+  .accordion-column {
     scrollbar-width: thin;
     scrollbar-color: rgb(156 163 175) transparent;
   }
-  .dark .panel [class*="overflow-y-auto"] {
+  .dark .panel [class*="overflow-y-auto"],
+  .dark .accordion-column {
     scrollbar-color: rgb(75 85 99) transparent;
   }
-  .panel [class*="overflow-y-auto"]::-webkit-scrollbar {
+  .panel [class*="overflow-y-auto"]::-webkit-scrollbar,
+  .accordion-column::-webkit-scrollbar {
     width: 5px;
   }
-  .panel [class*="overflow-y-auto"]::-webkit-scrollbar-track {
+  .panel [class*="overflow-y-auto"]::-webkit-scrollbar-track,
+  .accordion-column::-webkit-scrollbar-track {
     background: transparent;
   }
-  .panel [class*="overflow-y-auto"]::-webkit-scrollbar-thumb {
+  .panel [class*="overflow-y-auto"]::-webkit-scrollbar-thumb,
+  .accordion-column::-webkit-scrollbar-thumb {
     background-color: rgb(156 163 175);
     border-radius: 9999px;
   }
-  .dark .panel [class*="overflow-y-auto"]::-webkit-scrollbar-thumb {
+  .dark .panel [class*="overflow-y-auto"]::-webkit-scrollbar-thumb,
+  .dark .accordion-column::-webkit-scrollbar-thumb {
     background-color: rgb(75 85 99);
   }
 }
