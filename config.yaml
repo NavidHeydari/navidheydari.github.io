@@ -6,7 +6,6 @@ build:
 ignoreLogs:
   - warning-goldmark-raw-html
 title: Navid Heydari - Principal Architect (AI Architect)
-theme: aafu
 
 params:
   author: Navid Heydari

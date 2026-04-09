@@ -31,7 +31,7 @@
     {
       "position": "Software Engineer",
       "dates": "2013 - 2016",
-      "company": "CheckFree / Fiserv Inc.",
+      "company": "Fiserv",
       "details": [
         "Developed a robust solution for processing and validating new MasterCard credit card numbers (2-series BIN).",
         "Implemented performance tuning for internal processes (crunch 1 sec to 10 ms) for each credit card validation.",
