@@ -1,4 +1,5 @@
 {{ $delimiter := hugo.Data.publications.delimiter | default ". " }}
+<div id="publications-panel">
 
 {{ if hugo.Data.publications.types }}
 {{ range hugo.Data.publications.types }}
@@ -35,3 +36,10 @@
 </p>
 {{ end }}
 {{ end }}
+</div>
+<script>
+  document.querySelectorAll("#publications-panel a").forEach(function(a) {
+    a.setAttribute("target", "_blank");
+    a.setAttribute("rel", "noopener noreferrer");
+  });
+</script>
