@@ -3,6 +3,10 @@ languageCode: en-us
 build:
   writeStats: true
 
+services:
+  googleAnalytics:
+    id: G-XB245TPDQJ
+
 ignoreLogs:
   - warning-goldmark-raw-html
 title: Navid Heydari - Principal Architect (AI Architect)
