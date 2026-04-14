@@ -1,6 +1,5 @@
-
 ---
-title: "how to Approach to System Design Questions"
+title: "How to Approach to System Design Questions"
 date: 2025-04-08
 description: "Thinking checklist during System Design Problems"
 tags: ["system-design", "distributed-systems", "architecture","observability"]
@@ -8,46 +7,61 @@ categories: ["System Design"]
 draft: false
 ---
 
-## Main Topics to Think about for "System Design"
-- UI(in general what are the interfaces, mobile, website, their brief security big picture)
-- API level -- make the path for each along with their protocols, or HTTP methods.
-  - design the functionality based on requierments
-    - Need stats per each Id or in general?
-    - Need Id for a window of time? pass start and end or window
-    - base64 is preferred to handle characters.
-    - add the HTTP Method properly for each api
-    - Need DELETE and UPDATE as well?
-  - what protocol is better? HTTP or gRPC or Avro? webSocket?
-- data modeling
-  - if needs SQL RDBMS -- find if they need solid database and ACID features
-  - if needs NOSQL DB -- they need document based(graph or documents or unstructured data) 
-  - if needs VectorDB -- storing document in chunk
-    - chunking strategy comes into picture
-    - usually hybrid is a safe way to do
-  - what are the main functionality from API level
-    - can you break down into component level
-  - Design-Paradigm: componenets Connectivity 
-    - event-based: are they async without delay or listening (pub/sub model)
-      - then you can use even mechanisem and topics like: rabbitMq, redis or kafka + zookeeper
-    - real-time: http or gRPC calls
-    - real-time bu async: using webSocket to open a channel in birectional?
-    - file-based: using S3 buckets or BLOB storage ( parquete files)
-    - do you need batch processing logic?
-    - do you need function based logic ( lambda or Azure functions)
-  - do you need CDN
-    - to load files ( content is video or images, are they large files to be loaded on client side?)
-  - do you need NAS?
-  - do you need SFTP connections?
-  - do you need Main frame connectivity (SCP?)
-  - do you need DNS records updated?
-    - how API gateway is working there?
-  - do you need CQRS? seperate write from read?
-  - do you need caching?
-    - think about layers differently?
-  - Where to put observability?
-    - what logs to gather?
-    - what metrics to capture?
-    - what events are important?
-    - how to paint the profile/context big picture?
-    - how to handle the anomalies/incidents?
-    - 
+# Architecting for Scale: The Ultimate System Design Checklist
+
+Whether you are prepping for a high-stakes technical interview or architecting a new production service, the "blank whiteboard" problem is real. System design isn't just about drawing boxes; it's about making intentional, defensible trade-offs.
+
+To keep your thoughts organized, I’ve broken down the essential system design components into a repeatable framework. Use this to ensure no stone is left unturned.
+
+---
+
+## 1. The Interface Layer (UI & Security)
+Before diving into the backend, define how the user interacts with your system and how you protect that entry point.
+* **Platform Scope:** Is this a mobile-first experience, a responsive web app, or a CLI? Each has different latency expectations.
+* **Security Big Picture:** * Implement **OAuth2/OIDC** for authentication.
+    * Use **JWTs** for stateless session management.
+    * Protect against common vulnerabilities like **XSS, CSRF, and SQL Injection** at the gateway level.
+
+## 2. API Design & Requirements
+Your API is the contract between your service and the world. 
+* **Requirement Mapping:** * **Data Granularity:** Do you need stats per unique ID or aggregate global data?
+    * **Time Management:** For time-series data, should the API accept a `start/end` timestamp or a sliding `window`?
+    * **Encoding:** Use **Base64** for IDs or data blobs to safely handle special characters in URLs.
+* **Methodology:** Ensure strict adherence to HTTP semantics (`GET`, `POST`, `PUT`, `PATCH`, `DELETE`).
+* **Protocol Selection:** * **REST/HTTP:** Standard for public-facing web APIs.
+    * **gRPC/Avro:** Ideal for high-performance, low-latency internal microservice communication.
+    * **WebSockets:** Essential for bi-directional, real-time features like chat or live dashboards.
+
+## 3. Data Modeling Strategy
+Choosing a database is about more than just "SQL vs. NoSQL."
+* **Relational (RDBMS):** Choose this when you need **ACID compliance**, complex joins, and structured data.
+* **NoSQL:** Use for unstructured data, high-velocity writes, or horizontal scaling (Document, Graph, or Key-Value).
+* **Vector Databases:** If building AI-powered features (like RAG), focus on your **chunking strategy**. 
+    * *Tip:* A **hybrid search** approach (vector similarity + keyword search) is usually the most robust.
+
+## 4. Communication & Connectivity Paradigms
+How components interact defines the scalability and "loose coupling" of your system.
+* **Event-Driven (Async):** Use Pub/Sub models (**Kafka, RabbitMQ, or Redis**) to decouple services and handle bursts in traffic.
+* **Real-Time (Sync):** Standard Request-Response via HTTP or gRPC.
+* **File-Based Storage:** Use **S3 or BLOB storage** for large assets. Consider **Parquet** files for efficient analytical processing.
+* **Compute Logic:** Decide between persistent servers or event-triggered **Serverless Functions** (AWS Lambda / Azure Functions) for batch processing.
+
+## 5. Infrastructure & Advanced Optimization
+This is where you scale from "it works" to "it's enterprise-grade."
+* **Content Delivery:** Use a **CDN** to offload large files (videos/images) and reduce edge latency.
+* **Traffic Management:** How is your **API Gateway** handling DNS updates, rate limiting, and request routing?
+* **Enterprise Integration:** Do you need **SFTP** for third-party data or **Mainframe/SCP** connectivity?
+* **Performance Patterns:**
+    * **CQRS:** Separate "Write" models from "Read" models to optimize high-traffic systems.
+    * **Caching Strategy:** Implement layers at the Client, CDN, and Database level (Redis).
+
+## 6. Observability: The Production-Ready Test
+A system is only as good as your ability to debug it when things go wrong.
+* **Logs:** Centralize logs for traceability (ELK/Splunk).
+* **Metrics:** Capture the "Golden Signals": Latency, Traffic, Errors, and Saturation.
+* **Incident Management:** Define how the system detects anomalies and paints the "context big picture" for on-call engineers.
+
+---
+
+### Final Thought
+In an interview, **communication is key.** In production, **reliability is king.** By following this checklist, you demonstrate that you aren't just thinking about the code—you're thinking about the entire ecosystem.
