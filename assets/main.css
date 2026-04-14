@@ -116,6 +116,41 @@
       @apply my-0 p-2 hover:bg-warm-100 rounded-sm dark:hover:bg-darker;
     }
   }
+  /* Blog sidebar on homepage and post/list panels: scrollable on md+, natural on mobile */
+  .blog-sidebar,
+  .post-panel {
+    @apply pb-6;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-warm-200) transparent;
+  }
+  .dark .blog-sidebar,
+  .dark .post-panel {
+    scrollbar-color: rgb(75 85 99) transparent;
+  }
+  .blog-sidebar::-webkit-scrollbar,
+  .post-panel::-webkit-scrollbar {
+    width: 5px;
+  }
+  .blog-sidebar::-webkit-scrollbar-track,
+  .post-panel::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .blog-sidebar::-webkit-scrollbar-thumb,
+  .post-panel::-webkit-scrollbar-thumb {
+    background-color: var(--color-warm-200);
+    border-radius: 9999px;
+  }
+  .dark .blog-sidebar::-webkit-scrollbar-thumb,
+  .dark .post-panel::-webkit-scrollbar-thumb {
+    background-color: rgb(75 85 99);
+  }
+  @media (min-width: 768px) {
+    .blog-sidebar,
+    .post-panel {
+      overflow-y: auto;
+      max-height: calc(100vh - 6rem);
+    }
+  }
   /* Scrollable accordion content (inner panels) and the accordion column itself */
   .panel [class*="overflow-y-auto"],
   .accordion-column {
