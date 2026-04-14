@@ -2,9 +2,13 @@
   "name": "navidheydari-portfolio",
   "version": "1.0.0",
   "private": true,
+  "scripts": {
+    "test": "node -e \"const {JSDOM}=require('jsdom'),fs=require('fs'),dom=new JSDOM(fs.readFileSync('test/accordion.test.html','utf8'),{runScripts:'dangerously',resources:'usable',url:'http://localhost/'});dom.window.addEventListener('load',()=>{const s=dom.window.document.getElementById('summary'),o=dom.window.document.getElementById('output');Array.from(o.querySelectorAll('.fail')).forEach(f=>{process.stdout.write('FAIL: '+f.textContent+'\\n');const d=f.nextElementSibling;if(d&&d.classList.contains('error-detail'))process.stdout.write('  '+d.textContent+'\\n')});const t=s.textContent;process.stdout.write(t+'\\n');if(t.includes(', 0 failed'))process.exit(0);else process.exit(1)});\""
+  },
   "devDependencies": {
     "@tailwindcss/cli": "^4.2.2",
     "@tailwindcss/typography": "^0.5.19",
+    "jsdom": "^29.0.2",
     "tailwindcss": "^4.2.2"
   }
 }

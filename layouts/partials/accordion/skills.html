@@ -3,16 +3,16 @@
   if (elem) {
   let skillPanel = elem.previousElementSibling;
   skillPanel.addEventListener("click", function() {
-    let skillBars = document.querySelectorAll("#skill-percent");
+    let skillBars = document.querySelectorAll(".skill-percent");
     skillBars.forEach(elem => {
-      elem.style.width = elem.classList[0];
+      elem.style.width = elem.classList[1];
     });
   });
 }
 </script>
 {{ range hugo.Data.skills.list }}
-<code>{{ .skill }}</code>
+<p class="text-sm font-medium text-warm-900 dark:text-stone-100 mb-1 mt-3 first:mt-0">{{ .skill }}</p>
 <div class="w-full mt-1 mb-3 border border-warm-200 dark:border-gray-300 rounded-sm" style="height: 1.25rem;">
-  <div id="skill-percent" class="{{ .skillrating }}% bg-warm-500 dark:bg-gold-500 h-full rounded-sm" style="width: 0; transition: all 0.5s;"></div>
+  <div class="skill-percent {{ .skillrating }}% bg-warm-500 dark:bg-gold-500 h-full rounded-sm" style="width: 0; transition: all 0.5s;"></div>
 </div>
 {{ end }}

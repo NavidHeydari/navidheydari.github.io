@@ -20,7 +20,9 @@
     <div class="px-2">
       <h2 class="accordion {{- if and (.expand) (not $found_expanded) }} active {{- $found_expanded = true }} {{- end }}">
         {{ $current := index hugo.Data .item }}
-        <p onclick="expandAccordion(this)" style="cursor: pointer">
+        <p onclick="expandAccordion(this)"
+           onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();expandAccordion(this)}"
+           role="button" tabindex="0" style="cursor: pointer">
           <i class="{{ $current.icon }}"></i>
           {{ $current.title -}}
         </p>

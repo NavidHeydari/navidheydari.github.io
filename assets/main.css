@@ -185,7 +185,7 @@ html:not(.dark) {
   }
   .categories {
     @apply p-1 mr-2 mb-2 text-sm rounded-sm hover:shadow-sm;
-    @apply text-green-800! bg-green-100! hover:bg-green-200! border! border-green-600! dark:border-green-100!;
+    @apply text-warm-900! bg-warm-100! hover:bg-warm-200! border! border-warm-500! dark:text-gold-300! dark:bg-stone-700! dark:hover:bg-stone-600! dark:border-gold-500!;
   }
   .tags {
     @apply p-1 mr-2 mb-2 text-sm rounded-sm hover:shadow-sm;
