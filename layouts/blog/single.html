@@ -1,0 +1,63 @@
+{{ define "main" }}
+<div class="grid grid-cols-1 md:grid-cols-7 gap-3 py-2 md:items-start">
+
+  {{/* ── Left: profile card (same as homepage) ── */}}
+  <div class="md:col-span-2 md:sticky md:top-0 md:self-start">
+    <div class="bg-warm-100 dark:bg-darker drop-shadow-md p-2 rounded-t-lg">
+      <div class="flex flex-col justify-center">
+        {{ partial "profilePhoto" . }}
+        <div class="px-2 text-center">{{ partial "social" . }}</div>
+      </div>
+    </div>
+    {{ partial "footer" . }}
+  </div>
+
+  {{/* ── Right: post content panel ── */}}
+  <div class="md:col-span-5 md:sticky md:top-0 md:self-start md:overflow-y-auto post-panel">
+    <div class="px-1 sm:px-3">
+
+      {{/* Back link */}}
+      <div class="mb-4 pb-2 border-b border-warm-200 dark:border-gray-600">
+        <a href="{{ "/blog/" | relURL }}"
+           class="text-sm text-warm-500 dark:text-gold-300 hover:text-warm-600 dark:hover:text-gold-500 hover:underline">
+          ← All posts
+        </a>
+      </div>
+
+      {{/* Post header */}}
+      <div class="mb-4">
+        <h1 class="top-h1 !mb-1">{{ .Title }}</h1>
+        <p class="text-sm text-warm-700 dark:text-gray-400 mt-0">
+          {{ .Date.Format "January 2, 2006" }}
+          {{ with .ReadingTime }}&thinsp;·&thinsp;{{ . }} min read{{ end }}
+        </p>
+        {{ with .Description }}
+        <p class="text-warm-700 dark:text-gray-300 italic text-sm mt-1">{{ . }}</p>
+        {{ end }}
+        {{/* Tags */}}
+        {{ with .Params.tags }}
+        <div class="mt-2 flex flex-wrap gap-1">
+          {{ range . }}
+          <span class="tags">{{ . }}</span>
+          {{ end }}
+        </div>
+        {{ end }}
+      </div>
+
+      <hr class="border-warm-200 dark:border-gray-600 my-3" />
+
+      {{/* Post body */}}
+      <article class="prose prose-stone dark:prose-invert max-w-none">
+        {{ .Content }}
+      </article>
+
+      {{/* Prev / Next */}}
+      <div class="mt-6 pt-4 border-t border-warm-200 dark:border-gray-600">
+        {{ partial "prevnext" . }}
+      </div>
+
+    </div>
+  </div>
+
+</div>
+{{ end }}

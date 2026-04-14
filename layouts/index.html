@@ -1,7 +1,9 @@
 {{ define "main" }}
-<div class="grid grid-cols-1 md:grid-cols-5 gap-2 py-2 md:items-start">
-  <div class="col-span-2 md:sticky md:top-0 md:self-start">
-    <div class="bg-gray-300 dark:bg-darker drop-shadow-md p-2 rounded-t-lg">
+<div class="grid grid-cols-1 md:grid-cols-7 gap-3 py-2 md:items-start">
+
+  {{/* ── Left: profile card ── */}}
+  <div class="md:col-span-2 md:sticky md:top-0 md:self-start">
+    <div class="bg-warm-100 dark:bg-darker drop-shadow-md p-2 rounded-t-lg">
       <div class="flex flex-col justify-center">
         {{ partial "profilePhoto" . }}
         <div class="px-2 text-center">{{ partial "social" . }}</div>
@@ -9,7 +11,9 @@
     </div>
     {{ partial "footer" . }}
   </div>
-  <div class="accordion-column col-span-3 md:sticky md:top-0 md:self-start overflow-y-auto" style="max-height: calc(100vh - 6rem)">
+
+  {{/* ── Centre: accordion sections ── */}}
+  <div class="accordion-column md:col-span-3 md:sticky md:top-0 md:self-start overflow-y-auto" style="max-height: calc(100vh - 6rem)">
     {{ $found_expanded := false }}
     {{ range .Site.Params.accordion }}
     <div class="px-2">
@@ -32,5 +36,39 @@
     </div>
     {{ end }}
   </div>
+
+  {{/* ── Right: blog posts ── */}}
+  <div class="md:col-span-2 md:sticky md:top-0 md:self-start blog-sidebar">
+    <div class="px-2">
+      <h2 class="text-warm-900 dark:text-stone-100 border-b border-warm-200 dark:border-gray-600 pb-1 mb-3 text-xl font-semibold">
+        <i class="bi bi-journal-text mr-1"></i>Blog
+      </h2>
+      {{ $posts := where .Site.RegularPages "Section" "blog" }}
+      {{ $recent := first 5 ($posts.ByDate.Reverse) }}
+      {{ range $recent }}
+      <div class="mb-5 pb-4 border-b border-warm-200 dark:border-gray-700 last:border-0">
+        <a href="{{ .Permalink | relURL }}" class="font-medium text-warm-500 dark:text-gold-300 hover:text-warm-600 dark:hover:text-gold-500 hover:underline leading-snug block">
+          {{ .Title }}
+        </a>
+        <p class="text-xs text-warm-700 dark:text-gray-400 mt-0.5 mb-1">
+          {{ .Date.Format "Jan 2, 2006" }}
+          {{ with .ReadingTime }}&thinsp;·&thinsp;{{ . }} min read{{ end }}
+        </p>
+        {{ with .Description }}
+        <p class="text-sm text-warm-700 dark:text-gray-300 mt-0 leading-snug">{{ . }}</p>
+        {{ end }}
+      </div>
+      {{ end }}
+      {{ if eq (len $posts) 0 }}
+      <p class="text-sm text-warm-700 dark:text-gray-400 italic">No posts yet.</p>
+      {{ end }}
+      {{ if gt (len $posts) 0 }}
+      <a href="{{ "/blog/" | relURL }}" class="text-xs text-warm-500 dark:text-gold-300 hover:text-warm-600 dark:hover:text-gold-500 hover:underline">
+        All posts →
+      </a>
+      {{ end }}
+    </div>
+  </div>
+
 </div>
 {{ end }}

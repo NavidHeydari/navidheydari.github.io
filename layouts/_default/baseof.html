@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="{{ .Site.LanguageCode }}" class="m-auto {{ if .Site.Params.theme.mainTheme }} {{ .Site.Params.theme.mainTheme }} {{ end }}">
   {{- partial "head.html" . -}}
-  <body class="h-screen p-2 m-auto max-w-4xl flex flex-col overflow-x-hidden">
+  <body class="h-screen p-2 m-auto max-w-6xl flex flex-col overflow-x-hidden">
     {{ if not .Site.Params.theme.singlePage }}
     {{ partial "header" . }}
     {{ end }}
