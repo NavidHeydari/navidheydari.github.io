@@ -4,6 +4,14 @@
 @theme {
   --color-gold-300: #D4AF37;
   --color-gold-500: #B8860B;
+  /* Warm light-theme palette */
+  --color-warm-50:  #F7F4EF;
+  --color-warm-100: #EAE2D6;
+  --color-warm-200: #D6C9B8;
+  --color-warm-500: #B08968;
+  --color-warm-600: #8D6B4A;
+  --color-warm-700: #6E6256;
+  --color-warm-900: #3A332C;
 }
 
 @layer base {
@@ -12,7 +20,14 @@
   ::before,
   ::backdrop,
   ::file-selector-button {
-    border-color: var(--color-gray-700, currentColor);
+    border-color: var(--color-warm-200, currentColor);
+  }
+  .dark *,
+  .dark ::after,
+  .dark ::before,
+  .dark ::backdrop,
+  .dark ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
   }
   @media (prefers-color-scheme: dark) {
     *,
@@ -27,31 +42,31 @@
 
 @layer utilities {
   h1 {
-    @apply text-4xl mb-5 mt-1;
+    @apply text-4xl mb-5 mt-1 text-warm-900 dark:text-stone-100;
   }
   h2 {
-    @apply text-3xl mb-4 mt-1;
+    @apply text-3xl mb-4 mt-1 text-warm-900 dark:text-stone-100;
   }
   h3 {
-    @apply text-2xl mb-3 mt-1;
+    @apply text-2xl mb-3 mt-1 text-warm-900 dark:text-stone-100;
   }
   h4 {
-    @apply text-xl mb-2 mt-1;
+    @apply text-xl mb-2 mt-1 text-warm-900 dark:text-stone-100;
   }
   h5 {
-    @apply text-lg mb-2 mt-1;
+    @apply text-lg mb-2 mt-1 text-warm-900 dark:text-stone-100;
   }
   a {
-    @apply text-blue-500 hover:text-blue-700 hover:underline dark:text-gold-300 dark:hover:text-gold-500;
+    @apply text-warm-500 hover:text-warm-600 hover:underline dark:text-gold-300 dark:hover:text-gold-500;
   }
   body {
-    @apply text-base bg-stone-50 dark:text-stone-50 dark:bg-darkest;
+    @apply text-base bg-warm-50 text-warm-700 dark:text-stone-50 dark:bg-darkest;
   }
   summary {
     @apply block text-sm;
   }
   blockquote {
-    @apply bg-gray-100 dark:bg-dark rounded-sm;
+    @apply bg-warm-100 dark:bg-dark rounded-sm;
   }
   p {
     @apply mt-2 mb-2;
@@ -62,15 +77,15 @@
   ul.pagination {
     @apply flex flex-row justify-center;
     li {
-      @apply border border-gray-500 dark:border-gold-300 flex justify-center items-center;
+      @apply border border-warm-500 dark:border-gold-300 flex justify-center items-center;
     }
     .page-link {
-      @apply px-2 sm:px-4 py-1 hover:text-gray-200 dark:hover:text-gray-800 hover:bg-blue-500  dark:hover:bg-gold-300;
+      @apply px-2 sm:px-4 py-1 hover:text-warm-50 dark:hover:text-gray-800 hover:bg-warm-500 dark:hover:bg-gold-300;
     }
     .active {
-      @apply bg-blue-500 pointer-events-none  dark:bg-gold-300;
+      @apply bg-warm-500 pointer-events-none dark:bg-gold-300;
       .page-link {
-        @apply text-gray-200 dark:text-gray-800;
+        @apply text-warm-50 dark:text-gray-800;
       }
     }
   }
@@ -80,32 +95,32 @@
   }
   .tags {
     @apply p-1 mr-2 mb-2 text-sm rounded-sm hover:shadow-sm;
-    @apply text-gray-800! bg-gray-200! hover:bg-gray-300! border! border-gray-600! dark:border-gray-100!;
+    @apply text-warm-700! bg-warm-100! hover:bg-warm-200! border! border-warm-500! dark:text-gray-200! dark:bg-gray-700! dark:hover:bg-gray-600! dark:border-gray-100!;
   }
   .nav {
-    @apply text-lg text-blue-500 dark:text-gray-300 font-semibold;
+    @apply text-lg text-warm-700 dark:text-gray-300 font-semibold;
   }
   .nav-menu-item {
-    @apply hover:no-underline p-2 rounded-sm hover:bg-gray-200 dark:hover:bg-gray-800;
+    @apply hover:no-underline p-2 rounded-sm hover:bg-warm-200 dark:hover:bg-gray-800;
   }
   .active {
     @apply overflow-visible;
   }
   .prose ul,
   .prose ol {
-    @apply marker:text-gray-700 dark:marker:text-gray-200;
+    @apply marker:text-warm-500 dark:marker:text-gray-200;
   }
   .accordion {
-    @apply text-blue-600 dark:text-gold-500 my-0;
+    @apply text-warm-500 dark:text-gold-500 my-0;
     > p {
-      @apply my-0 p-2 hover:bg-gray-300 rounded-sm dark:hover:bg-darker;
+      @apply my-0 p-2 hover:bg-warm-100 rounded-sm dark:hover:bg-darker;
     }
   }
   /* Scrollable accordion content (inner panels) and the accordion column itself */
   .panel [class*="overflow-y-auto"],
   .accordion-column {
     scrollbar-width: thin;
-    scrollbar-color: rgb(156 163 175) transparent;
+    scrollbar-color: var(--color-warm-200) transparent;
   }
   .dark .panel [class*="overflow-y-auto"],
   .dark .accordion-column {
@@ -121,7 +136,7 @@
   }
   .panel [class*="overflow-y-auto"]::-webkit-scrollbar-thumb,
   .accordion-column::-webkit-scrollbar-thumb {
-    background-color: rgb(156 163 175);
+    background-color: var(--color-warm-200);
     border-radius: 9999px;
   }
   .dark .panel [class*="overflow-y-auto"]::-webkit-scrollbar-thumb,

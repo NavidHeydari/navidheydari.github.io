@@ -24,19 +24,33 @@ module.exports = {
           css: {
             "code::before": false,
             "code::after": false,
+            color: "#6E6256",
             a: {
-              color: theme(`colors.blue.600`),
+              color: "#B08968",
               textDecoration: "none",
               "&:hover": {
-                color: theme(`colors.blue.800`),
+                color: "#8D6B4A",
                 textDecoration: "underline",
               },
             },
+            h1: { color: "#3A332C" },
+            h2: { color: "#3A332C" },
+            h3: { color: "#3A332C" },
+            h4: { color: "#3A332C" },
+            h5: { color: "#3A332C" },
+            h6: { color: "#3A332C" },
+            strong: { color: "#3A332C" },
             pre: {
-              backgroundColor: theme(`colors.stone.200`),
-              color: theme(`colors.gray.700`),
+              backgroundColor: "#EAE2D6",
+              color: "#6E6256",
             },
-            code: { color: theme(`colors.gray.700`) },
+            code: { color: "#6E6256" },
+            blockquote: {
+              color: "#6E6256",
+              borderLeftColor: "#D6C9B8",
+            },
+            hr: { borderColor: "#D6C9B8" },
+            "thead th": { color: "#3A332C" },
           },
         },
         invert: {
