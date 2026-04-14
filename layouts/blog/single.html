@@ -1,19 +1,22 @@
 {{ define "main" }}
-<div class="grid grid-cols-1 md:grid-cols-7 gap-3 py-2 md:items-start">
+<div class="grid grid-cols-1 md:grid-cols-8 gap-3 py-2 md:items-start">
 
-  {{/* ── Left: profile card (same as homepage) ── */}}
-  <div class="md:col-span-2 md:sticky md:top-0 md:self-start">
-    <div class="bg-warm-100 dark:bg-darker drop-shadow-md p-2 rounded-t-lg">
-      <div class="flex flex-col justify-center">
-        {{ partial "profilePhoto" . }}
-        <div class="px-2 text-center">{{ partial "social" . }}</div>
-      </div>
+  {{/* ── Left: Table of Contents ── */}}
+  <div class="md:col-span-2 md:sticky md:top-0 md:self-start toc-panel">
+    <div class="bg-warm-100 dark:bg-darker drop-shadow-md p-3 rounded-lg"
+         style="view-transition-name: profile-card">
+      <p class="toc-heading">Contents</p>
+      {{ if .TableOfContents }}
+        {{ .TableOfContents }}
+      {{ else }}
+        <p class="text-xs text-warm-700 dark:text-gray-400 italic">No headings.</p>
+      {{ end }}
     </div>
     {{ partial "footer" . }}
   </div>
 
-  {{/* ── Right: post content panel ── */}}
-  <div class="md:col-span-5 md:sticky md:top-0 md:self-start md:overflow-y-auto post-panel">
+  {{/* ── Middle: post content panel ── */}}
+  <div class="md:col-span-4 md:sticky md:top-0 md:self-start md:overflow-y-auto post-panel">
     <div class="px-1 sm:px-3">
 
       {{/* Back link */}}
@@ -59,5 +62,89 @@
     </div>
   </div>
 
+  {{/* ── Right: Archive / Calendar panel ── */}}
+  <div class="md:col-span-2 md:sticky md:top-0 md:self-start blog-sidebar">
+    <div class="bg-warm-100 dark:bg-darker drop-shadow-md p-3 rounded-lg">
+      <p class="toc-heading">Archive</p>
+      {{ $blogPosts := where .Site.RegularPages "Section" "blog" }}
+      {{ $currentPage := . }}
+      {{ range $blogPosts.GroupByDate "2006" }}
+      <details open class="archive-year">
+        <summary class="archive-year-label">
+          <i class="bi bi-chevron-right archive-chevron"></i>{{ .Key }}
+        </summary>
+        <div class="archive-month-list">
+          {{ range .Pages.GroupByDate "January 2006" }}
+          <details class="archive-month">
+            <summary class="archive-month-label">
+              <i class="bi bi-chevron-right archive-chevron"></i>{{ .Key | replaceRE " \\d{4}$" "" }}
+            </summary>
+            <ul class="archive-posts">
+              {{ range .Pages }}
+              <li>
+                <a href="{{ .Permalink }}"
+                   class="archive-post-link {{ if eq .Permalink $currentPage.Permalink }}archive-post-active{{ end }}">
+                  {{ .Title }}
+                </a>
+              </li>
+              {{ end }}
+            </ul>
+          </details>
+          {{ end }}
+        </div>
+      </details>
+      {{ end }}
+    </div>
+  </div>
+
 </div>
+{{ end }}
+
+{{ define "scripts" }}
+<script>
+(function () {
+  /* ── ToC active-heading highlighting ── */
+  const toc = document.querySelector('#TableOfContents');
+  if (!toc) return;
+
+  const headings = Array.from(
+    document.querySelectorAll('article h1, article h2, article h3, article h4, article h5')
+  );
+  const tocLinks = Array.from(toc.querySelectorAll('a'));
+
+  const setActive = (id) => {
+    tocLinks.forEach(a => {
+      if (a.getAttribute('href') === '#' + id) {
+        a.classList.add('toc-active');
+      } else {
+        a.classList.remove('toc-active');
+      }
+    });
+  };
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      const visible = entries.filter(e => e.isIntersecting);
+      if (visible.length > 0) {
+        setActive(visible[0].target.id);
+      }
+    },
+    { rootMargin: '0px 0px -70% 0px', threshold: 0 }
+  );
+
+  headings.forEach(h => { if (h.id) observer.observe(h); });
+
+  /* ── Auto-open the current month in the archive panel ── */
+  const now = new Date();
+  const months = ['January','February','March','April','May','June',
+                  'July','August','September','October','November','December'];
+  const curMonth = months[now.getMonth()];
+  document.querySelectorAll('.archive-month').forEach(detail => {
+    const label = detail.querySelector('.archive-month-label');
+    if (label && label.textContent.trim().startsWith(curMonth)) {
+      detail.setAttribute('open', '');
+    }
+  });
+})();
+</script>
 {{ end }}

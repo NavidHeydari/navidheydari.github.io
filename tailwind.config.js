@@ -41,10 +41,14 @@ module.exports = {
             h6: { color: "#3A332C" },
             strong: { color: "#3A332C" },
             pre: {
-              backgroundColor: "#EAE2D6",
-              color: "#6E6256",
+              /* Dark editor block on light page — Monokai tokens need a dark bg */
+              backgroundColor: "#292524",
+              color: "#e5e7eb",
             },
-            code: { color: "#6E6256" },
+            code: {
+              /* Inline code: warm amber so it reads as "code" against body text */
+              color: "#9b4222",
+            },
             blockquote: {
               color: "#6E6256",
               borderLeftColor: "#D6C9B8",

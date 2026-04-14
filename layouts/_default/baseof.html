@@ -12,5 +12,6 @@
     {{ if and (not .IsHome) (not .Site.Params.theme.singlepage) }}
     {{ partial "footer" . }}
     {{ end }}
+    {{- block "scripts" . }}{{- end }}
   </body>
 </html>

@@ -1,6 +1,74 @@
 @import "tailwindcss";
 @config './tailwind.config.js';
 
+/* ── Cross-document view transitions ── */
+@view-transition {
+  navigation: auto;
+}
+
+/*
+ * Theme-aware background for both <html> and the ::view-transition overlay.
+ *
+ * --vt-bg is a CSS variable set here and inherited by ::view-transition.
+ * The overlay is an independent pseudo-element painted above everything;
+ * without an explicit background it defaults to white, causing the flash.
+ *
+ * stone-900 (#1c1917) = "darkest" (default theme)
+ * warm-50   (#F7F4EF) = light mode
+ */
+html {
+  background-color: #1c1917;
+  --vt-bg: #1c1917;
+}
+html:not(.dark) {
+  background-color: #F7F4EF;
+  --vt-bg: #F7F4EF;
+}
+
+/* The overlay itself must carry the right background so no white leaks
+   through holes left by view-transition-named elements in the root snapshot. */
+::view-transition {
+  background-color: var(--vt-bg, #1c1917);
+}
+
+/* Suppress the full-page crossfade — page content switches instantly.
+   Only the named profile-card element gets a custom animation. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/*
+ * Profile-card morph: simultaneous crossfade + very subtle scale.
+ *
+ * KEY: mix-blend-mode: plus-lighter on both old and new means their
+ * combined opacity always sums to 1.0 throughout the crossfade, so
+ * the isolated image-pair background never bleeds through — no white
+ * gap between the outgoing and incoming card states.
+ *
+ * No delay on vt-card-in: old and new animate in parallel (no gap).
+ */
+@keyframes vt-card-out {
+  from { opacity: 1; scale: 1;    }
+  to   { opacity: 0; scale: 0.94; }
+}
+@keyframes vt-card-in {
+  from { opacity: 0; scale: 0.94; }
+  to   { opacity: 1; scale: 1;    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(profile-card) {
+    animation: 280ms ease-in  both vt-card-out;
+    mix-blend-mode: plus-lighter;
+  }
+  ::view-transition-new(profile-card) {
+    animation: 280ms ease-out both vt-card-in; /* no delay — starts immediately */
+    mix-blend-mode: plus-lighter;
+  }
+}
+
 @theme {
   --color-gold-300: #D4AF37;
   --color-gold-500: #B8860B;
@@ -110,6 +178,20 @@
   .prose ol {
     @apply marker:text-warm-500 dark:marker:text-gray-200;
   }
+  /* Inline code pill — light mode */
+  .prose :not(pre) > code {
+    @apply bg-warm-200 text-[#9b4222] rounded px-[0.35em] py-[0.15em] text-[0.85em];
+  }
+  /* Inline code pill — dark mode */
+  .dark .prose :not(pre) > code {
+    @apply bg-stone-700 text-gray-200;
+  }
+  /* Ensure Chroma's inline token <span> colours win over any inherited prose colour */
+  .prose pre code {
+    color: inherit;
+    background: transparent;
+    padding: 0;
+  }
   .accordion {
     @apply text-warm-500 dark:text-gold-500 my-0;
     > p {
@@ -151,6 +233,81 @@
       max-height: calc(100vh - 6rem);
     }
   }
+  /* ── Table of Contents panel ── */
+  .toc-panel {
+    @apply pb-6;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-warm-200) transparent;
+  }
+  .dark .toc-panel {
+    scrollbar-color: rgb(75 85 99) transparent;
+  }
+  .toc-panel::-webkit-scrollbar { width: 5px; }
+  .toc-panel::-webkit-scrollbar-track { background: transparent; }
+  .toc-panel::-webkit-scrollbar-thumb {
+    background-color: var(--color-warm-200);
+    border-radius: 9999px;
+  }
+  .dark .toc-panel::-webkit-scrollbar-thumb { background-color: rgb(75 85 99); }
+  @media (min-width: 768px) {
+    .toc-panel { overflow-y: auto; max-height: calc(100vh - 6rem); }
+  }
+  .toc-heading {
+    @apply text-xs font-semibold uppercase tracking-widest text-warm-700 dark:text-gray-400 mb-2 mt-0;
+  }
+  /* Hugo-generated #TableOfContents */
+  #TableOfContents ul {
+    @apply list-none pl-3 mt-0 mb-0;
+  }
+  #TableOfContents > ul {
+    @apply pl-0;
+  }
+  #TableOfContents a {
+    @apply block text-xs py-0.5 leading-snug text-warm-700 dark:text-gray-300
+           hover:text-warm-500 dark:hover:text-gold-300 no-underline hover:underline;
+  }
+  #TableOfContents a.toc-active {
+    @apply text-warm-500 dark:text-gold-300 font-semibold;
+  }
+
+  /* ── Archive / Calendar panel ── */
+  .archive-year {
+    @apply mb-1;
+  }
+  .archive-year-label {
+    @apply flex items-center gap-1 text-xs font-bold uppercase tracking-wider
+           text-warm-900 dark:text-gray-200 cursor-pointer select-none py-0.5
+           list-none;
+  }
+  .archive-year-label::-webkit-details-marker { display: none; }
+  .archive-month-list {
+    @apply pl-3 mt-0.5;
+  }
+  .archive-month {
+    @apply mb-0.5;
+  }
+  .archive-month-label {
+    @apply flex items-center gap-1 text-xs font-medium text-warm-700 dark:text-gray-400
+           cursor-pointer select-none py-0.5 list-none;
+  }
+  .archive-month-label::-webkit-details-marker { display: none; }
+  .archive-chevron {
+    @apply text-[10px] transition-transform duration-150 inline-block;
+  }
+  details[open] > summary .archive-chevron {
+    @apply rotate-90;
+  }
+  .archive-posts {
+    @apply list-none pl-3 mt-0.5 mb-1 space-y-0.5;
+  }
+  .archive-post-link {
+    @apply block text-xs leading-snug py-0.5 text-warm-600 dark:text-gray-300
+           hover:text-warm-500 dark:hover:text-gold-300 no-underline hover:underline;
+  }
+  .archive-post-active {
+    @apply text-warm-500! dark:text-gold-300! font-semibold underline!;
+  }
+
   /* Scrollable accordion content (inner panels) and the accordion column itself */
   .panel [class*="overflow-y-auto"],
   .accordion-column {
