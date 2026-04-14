@@ -9,7 +9,7 @@ draft: false
 
 ## Singleton Connection Cache — Design Notes
 
-#### Overview
+### Overview
 
 The pattern wraps a **connection factory** in a callable-class decorator.
 Every unique call signature `(host, port)` maps to exactly one live
@@ -28,9 +28,9 @@ Thread A ──► get_connection("db-primary", 5432)
 
 ---
 
-#### Architecture Decisions
+### Architecture Decisions
 
-###### Double-Checked Locking in `__call__`
+#### Double-Checked Locking in `__call__`
 
 ```python
 ## ① fast path — return immediately if cached
@@ -58,7 +58,7 @@ threads from storing two connections for the same key.
 
 ---
 
-#### `RLock` vs `Lock`
+### `RLock` vs `Lock`
 
 | | `threading.Lock` | `threading.RLock` |
 |---|---|---|
@@ -68,7 +68,7 @@ threads from storing two connections for the same key.
 | **Release rule** | Any thread can release | Only the owning thread can release |
 | **Use case** | Simple guards, no nested locking | Recursive algorithms, `__del__` safety |
 
-###### Why `RLock` is the right choice here
+### Why `RLock` is the right choice here
 
 1. **`evict_object` calls `_safe_close` outside the lock** — but if a
    connection's `.close()` method ever calls back into the factory
@@ -85,7 +85,7 @@ threads from storing two connections for the same key.
    operations are dominated by network I/O (milliseconds), not lock
    overhead (nanoseconds).
 
-###### When to prefer plain `Lock`
+### When to prefer plain `Lock`
 
 - The critical section is very tight and called millions of times per second.
 - You are certain no re-entry will ever occur.
@@ -93,9 +93,9 @@ threads from storing two connections for the same key.
 
 ---
 
-#### Callable Class vs `functools.wraps`
+## Callable Class vs `functools.wraps`
 
-###### Callable Class (`SingletonCache`)
+### Callable Class (`SingletonCache`)
 
 ```python
 @SingletonCache
@@ -114,7 +114,7 @@ def get_connection(host, port): ...
 | **Signature visibility** | Requires manually copying `__name__`, `__doc__`, etc. |
 | **Type checker support** | Partial — mypy/pyright may not infer return type from `__call__` |
 
-###### `functools.wraps` Closure
+### `functools.wraps` Closure
 
 ```python
 @singleton_cache          ## returns a plain function
@@ -133,7 +133,7 @@ def get_connection(host, port): ...
 | **`__wrapped__`** | Set automatically — `inspect.unwrap()` reaches the original |
 | **Type checker support** | Excellent — full inference of args and return type |
 
-###### Decision Guide
+## Decision Guide
 
 ```
 Does the cached object need lifecycle management (.close(), __del__)?
@@ -150,7 +150,7 @@ Is this library code consumed by type-checked callers?
 
 ---
 
-#### Eviction Strategy
+## Eviction Strategy
 
 | Method | Complexity | Use when |
 |---|---|---|
@@ -165,7 +165,7 @@ connections equal (e.g. same host/port but different socket handles).
 
 ---
 
-#### `__del__` Safety Rules
+### `__del__` Safety Rules
 
 1. **Never raise** — exceptions in `__del__` are printed to stderr and
    swallowed; they cannot be caught by callers.
@@ -179,7 +179,10 @@ connections equal (e.g. same host/port but different socket handles).
    clear the dict, release the lock, then close each connection.
 
 
-#### Full Python Code Implementation
+---
+
+## Full Python Code Implementation
+
 ```python
 
 class FakeDBConnection:
@@ -276,4 +279,5 @@ if __name__ == "__main__":
     removed = get_connection.clear()
     print(f"  clear() closed {removed} connection(s)")
     print(f"  cache : {get_connection.cache_info()}")
-    ```
+
+```
