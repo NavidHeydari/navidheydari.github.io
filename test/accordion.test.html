@@ -67,10 +67,20 @@ function buildAccordion({ sections = ['about_me', 'experiences', 'skills'], acti
     const h2 = document.createElement('h2');
     h2.className = 'accordion' + (i === activeIdx ? ' active' : '');
 
+    // Mirrors production: role="button", tabindex="0", keyboard handler
     const p = document.createElement('p');
-    p.setAttribute('onclick', 'expandAccordion(this)');
+    p.setAttribute('role', 'button');
+    p.setAttribute('tabindex', '0');
     p.style.cursor = 'pointer';
     p.textContent = name;
+    // Wire keyboard handler the same way index.html does
+    p.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        expandAccordion(p);
+      }
+    });
+    p.setAttribute('onclick', 'expandAccordion(this)');
     h2.appendChild(p);
 
     const panel = document.createElement('div');
@@ -80,12 +90,12 @@ function buildAccordion({ sections = ['about_me', 'experiences', 'skills'], acti
       panel.id = 'skill-panel';
     }
 
-    // Add fake skill bars inside skills panel
+    // Add fake skill bars inside skills panel (class-based, not id-based)
     if (name === 'skills') {
       ['60%', '80%', '90%'].forEach(pct => {
         const bar = document.createElement('div');
-        bar.id = 'skill-percent';
-        bar.className = pct;
+        // Production markup: class="skill-percent 90% bg-warm-500 …"
+        bar.className = 'skill-percent ' + pct;
         bar.style.width = i === activeIdx ? pct : '0';
         panel.appendChild(bar);
       });
@@ -100,8 +110,7 @@ function buildAccordion({ sections = ['about_me', 'experiences', 'skills'], acti
   return wrappers;
 }
 
-// ─── Production accordion logic (copied verbatim from layouts/partials/head.html)
-// ────────────────────────────────────────────────────────────────────────────
+// ─── Production accordion logic (mirrors layouts/partials/head.html) ────────
 const expandAccordion = (elem) => {
   const allPanels = Array.from(document.querySelectorAll('#fixture .panel'));
   const allAccordion = Array.from(document.querySelectorAll('#fixture .accordion'));
@@ -119,8 +128,9 @@ const expandAccordion = (elem) => {
       activePanel.id != "skill-panel" &&
       document.querySelector("#skill-panel")
     ) {
+      // Updated: uses .skill-percent class selector (C2 fix)
       let skillBars = Array.from(
-        document.querySelectorAll("#skill-percent")
+        document.querySelectorAll(".skill-percent")
       );
       skillBars.forEach((elem) => {
         elem.style.width = "0";
@@ -130,7 +140,7 @@ const expandAccordion = (elem) => {
   }
 };
 
-// ─── Theme helpers (copied verbatim) ────────────────────────────────────────
+// ─── Theme helpers (mirrors layouts/partials/head.html) ─────────────────────
 const setTheme = (theme) => {
   const html = document.querySelector('html');
   html.classList.remove('light');
@@ -226,13 +236,13 @@ suite('Accordion: skill bar animation reset', () => {
   test('skill bars are reset to width 0 when leaving the skills panel', () => {
     // Start with skills (index 2) active
     const sections = buildAccordion({ activeIdx: 2 });
-    // Simulate bars currently filled
-    document.querySelectorAll('#skill-percent').forEach(b => b.style.width = b.className);
+    // Simulate bars currently filled — classList[1] holds the pct (e.g. "60%")
+    document.querySelectorAll('.skill-percent').forEach(b => { b.style.width = b.classList[1]; });
 
     // Click a non-skills header
     expandAccordion(sections[0].p);
 
-    const bars = Array.from(document.querySelectorAll('#skill-percent'));
+    const bars = Array.from(document.querySelectorAll('.skill-percent'));
     bars.forEach(bar => {
       assertEqual(bar.style.width, '0px', 'skill bar should be reset to 0 after leaving skills');
     });
@@ -242,14 +252,14 @@ suite('Accordion: skill bar animation reset', () => {
     // Start with first section active
     const sections = buildAccordion({ activeIdx: 0 });
     // Pre-fill bars
-    document.querySelectorAll('#skill-percent').forEach(b => b.style.width = b.className);
+    document.querySelectorAll('.skill-percent').forEach(b => { b.style.width = b.classList[1]; });
 
     // Click skills header
     expandAccordion(sections[2].p);
 
     // The JS only resets bars if activePanel.id != 'skill-panel',
     // so bars should remain untouched by the reset branch.
-    const bars = Array.from(document.querySelectorAll('#skill-percent'));
+    const bars = Array.from(document.querySelectorAll('.skill-percent'));
     bars.forEach(bar => {
       assert(bar.style.width !== '0px', 'skill bars should not be zeroed when opening skills');
     });
@@ -257,16 +267,85 @@ suite('Accordion: skill bar animation reset', () => {
 
 });
 
-suite('Layout: right accordion column is a bounded scroll container', () => {
+suite('Accessibility: accordion trigger ARIA attributes (C3)', () => {
 
-  // These tests inspect the actual rendered layout of the portfolio page.
-  // They run against the fixture DOM, but we also verify the index.html
-  // template produces the correct structural attributes (checked via DOM
-  // simulation below).
+  test('trigger <p> has role="button"', () => {
+    const [, b] = buildAccordion();
+    assertEqual(b.p.getAttribute('role'), 'button',
+      'accordion trigger must have role="button" for screen readers');
+  });
+
+  test('trigger <p> has tabindex="0"', () => {
+    const [, b] = buildAccordion();
+    assertEqual(b.p.getAttribute('tabindex'), '0',
+      'accordion trigger must have tabindex="0" for keyboard focus');
+  });
+
+  test('Enter key activates an inactive accordion panel', () => {
+    const [a, b] = buildAccordion();
+    const event = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true });
+    b.p.dispatchEvent(event);
+    assert(b.h2.classList.contains('active'),
+      'pressing Enter should expand the panel just like a click');
+  });
+
+  test('Space key activates an inactive accordion panel', () => {
+    const [a, b] = buildAccordion();
+    const event = new KeyboardEvent('keydown', { key: ' ', bubbles: true, cancelable: true });
+    b.p.dispatchEvent(event);
+    assert(b.h2.classList.contains('active'),
+      'pressing Space should expand the panel just like a click');
+  });
+
+  test('Enter on already-active panel does not collapse it', () => {
+    const [a] = buildAccordion();
+    const heightBefore = a.panel.style.maxHeight;
+    const event = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true });
+    a.p.dispatchEvent(event);
+    assertEqual(a.panel.style.maxHeight, heightBefore,
+      'keyboard Enter on active panel should not toggle it closed');
+  });
+
+  test('Tab key does not trigger accordion expansion', () => {
+    const [a, b] = buildAccordion();
+    const event = new KeyboardEvent('keydown', { key: 'Tab', bubbles: true });
+    b.p.dispatchEvent(event);
+    assert(!b.h2.classList.contains('active'),
+      'Tab key must not expand the accordion');
+  });
+
+});
+
+suite('Accessibility: skill bar DOM validity (C2)', () => {
+
+  test('skill bars use class selector, not id', () => {
+    buildAccordion();
+    const byId = document.querySelectorAll('#skill-percent');
+    assertEqual(byId.length, 0,
+      'no element should have id="skill-percent" — duplicate IDs are invalid HTML');
+  });
+
+  test('skill bars are reachable via .skill-percent class selector', () => {
+    buildAccordion();
+    const byClass = document.querySelectorAll('.skill-percent');
+    assert(byClass.length > 0, '.skill-percent class selector must find skill bar elements');
+  });
+
+  test('each skill bar has a percentage in classList[1]', () => {
+    buildAccordion();
+    const bars = Array.from(document.querySelectorAll('.skill-percent'));
+    bars.forEach(bar => {
+      assert(bar.classList[1] && bar.classList[1].endsWith('%'),
+        `classList[1] should be a percentage string, got: ${bar.classList[1]}`);
+    });
+  });
+
+});
+
+suite('Layout: right accordion column is a bounded scroll container', () => {
 
   function buildLayoutFixture() {
     const outer = document.createElement('div');
-    // Simulate what index.html now renders for the right column
     outer.innerHTML = `
       <div id="right-col"
            class="col-span-3 md:sticky md:top-0 md:self-start overflow-y-auto"
@@ -399,6 +478,73 @@ suite('Theme: toggle and persistence', () => {
     fixThemeToggleIcon('dark');
     assert(!icon.classList.contains('bi-moon'), 'bi-moon should be removed when switching to dark');
     icon.remove();
+  });
+
+});
+
+suite('Accessibility: theme toggle ARIA attributes (M4)', () => {
+
+  function makeAccessibleToggle() {
+    const i = document.createElement('i');
+    // Mirrors production header.html attributes
+    i.className = 'bi bi-brightness-high theme-toggle';
+    i.setAttribute('role', 'button');
+    i.setAttribute('tabindex', '0');
+    i.setAttribute('aria-label', 'Toggle colour theme');
+    i.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggleTheme();
+      }
+    });
+    document.getElementById('fixture').appendChild(i);
+    return i;
+  }
+
+  test('theme toggle has role="button"', () => {
+    const el = makeAccessibleToggle();
+    assertEqual(el.getAttribute('role'), 'button',
+      'theme toggle must have role="button" for screen readers');
+    el.remove();
+  });
+
+  test('theme toggle has tabindex="0"', () => {
+    const el = makeAccessibleToggle();
+    assertEqual(el.getAttribute('tabindex'), '0',
+      'theme toggle must have tabindex="0" to be keyboard-focusable');
+    el.remove();
+  });
+
+  test('theme toggle has a non-empty aria-label', () => {
+    const el = makeAccessibleToggle();
+    const label = el.getAttribute('aria-label');
+    assert(label && label.trim().length > 0,
+      'theme toggle must have an aria-label so screen readers can announce it');
+    el.remove();
+  });
+
+  test('Enter key on theme toggle flips the theme', () => {
+    const html = document.querySelector('html');
+    const el = makeAccessibleToggle();
+    html.classList.add('dark');
+    const event = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true });
+    el.dispatchEvent(event);
+    assert(!html.classList.contains('dark'),
+      'Enter on theme toggle should switch dark → light');
+    el.remove();
+    html.classList.remove('dark');
+  });
+
+  test('Space key on theme toggle flips the theme', () => {
+    const html = document.querySelector('html');
+    const el = makeAccessibleToggle();
+    html.classList.remove('dark');
+    const event = new KeyboardEvent('keydown', { key: ' ', bubbles: true, cancelable: true });
+    el.dispatchEvent(event);
+    assert(html.classList.contains('dark'),
+      'Space on theme toggle should switch light → dark');
+    el.remove();
+    html.classList.remove('dark');
   });
 
 });

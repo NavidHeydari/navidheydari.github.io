@@ -4,7 +4,7 @@
 {{ if hugo.Data.publications.types }}
 {{ range hugo.Data.publications.types }}
 {{ $type := . }}
-<h4 style="text-decoration: underline;">{{ $type }}</h4>
+<h4 class="underline">{{ $type }}</h4>
 {{- range hugo.Data.publications.list -}}
 {{ if eq $type .type }}
 {{- $this_publication := . -}}

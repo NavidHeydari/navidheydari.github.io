@@ -1,6 +1,6 @@
-<h1 class="mb-0">{{ hugo.Data.profile.name }}</h1>
-<h2 class="mb-0">{{ hugo.Data.profile.tagline }}</h2>
-<h3 class="mb-4">{{ hugo.Data.profile.location }}</h3>
+<p class="text-xl font-bold text-warm-900 dark:text-stone-100 mb-0 mt-1">{{ hugo.Data.profile.name }}</p>
+<p class="text-sm text-warm-700 dark:text-gray-300 mb-0 mt-0.5">{{ hugo.Data.profile.tagline }}</p>
+<p class="text-xs text-warm-600 dark:text-gray-400 mb-4 mt-0">{{ hugo.Data.profile.location }}</p>
 <div class="mb-4 flex flex-wrap justify-center">
   {{ range $key, $value := hugo.Data.social }}
   <div class="mx-2">

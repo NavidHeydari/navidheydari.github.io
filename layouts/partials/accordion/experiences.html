@@ -1,6 +1,6 @@
 <div class="max-h-[420px] overflow-y-auto overflow-x-hidden w-full min-w-0 pr-2 scrollbar-thin scrollbar-thumb-gray-400 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
 {{ range hugo.Data.experiences.list }}
-<h4 style="text-decoration: underline">{{ .position }}</h4>
+<h4 class="underline">{{ .position }}</h4>
 <p {{if .details }}class="mb-0"{{ end }}>
   {{ .dates | markdownify }} &middot;
   {{ if .url }}
