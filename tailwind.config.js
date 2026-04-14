@@ -24,37 +24,41 @@ module.exports = {
           css: {
             "code::before": false,
             "code::after": false,
-            color: "#6E6256",
+            /* warm-700: cool dark blue-gray — body copy recedes, creating depth */
+            color: "#3A5570",
             a: {
-              color: "#B08968",
+              /* warm-500: primary accent blue — links are immediately recognisable */
+              color: "#1F65B8",
               textDecoration: "none",
               "&:hover": {
-                color: "#8D6B4A",
+                /* warm-600: darker blue on hover */
+                color: "#1550A0",
                 textDecoration: "underline",
               },
             },
-            h1: { color: "#3A332C" },
-            h2: { color: "#3A332C" },
-            h3: { color: "#3A332C" },
-            h4: { color: "#3A332C" },
-            h5: { color: "#3A332C" },
-            h6: { color: "#3A332C" },
-            strong: { color: "#3A332C" },
+            /* warm-900: deep navy — headings advance against cool body text */
+            h1: { color: "#0F2040" },
+            h2: { color: "#0F2040" },
+            h3: { color: "#0F2040" },
+            h4: { color: "#0F2040" },
+            h5: { color: "#0F2040" },
+            h6: { color: "#0F2040" },
+            strong: { color: "#0F2040" },
             pre: {
               /* Dark editor block on light page — Monokai tokens need a dark bg */
-              backgroundColor: "#292524",
-              color: "#e5e7eb",
+              backgroundColor: "#0F1C2E",
+              color: "#e2e8f0",
             },
             code: {
-              /* Inline code: warm amber so it reads as "code" against body text */
-              color: "#9b4222",
+              /* Inline code: warm-600 so it reads as "code" distinct from link blue */
+              color: "#1550A0",
             },
             blockquote: {
-              color: "#6E6256",
-              borderLeftColor: "#D6C9B8",
+              color: "#3A5570",
+              borderLeftColor: "#B9D0EA",
             },
-            hr: { borderColor: "#D6C9B8" },
-            "thead th": { color: "#3A332C" },
+            hr: { borderColor: "#B9D0EA" },
+            "thead th": { color: "#0F2040" },
           },
         },
         invert: {

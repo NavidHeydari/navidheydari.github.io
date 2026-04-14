@@ -21,8 +21,8 @@ html {
   --vt-bg: #1c1917;
 }
 html:not(.dark) {
-  background-color: #F7F4EF;
-  --vt-bg: #F7F4EF;
+  background-color: #F0F6FF;
+  --vt-bg: #F0F6FF;
 }
 
 /* The overlay itself must carry the right background so no white leaks
@@ -98,14 +98,24 @@ html:not(.dark) {
 @theme {
   --color-gold-300: #D4AF37;
   --color-gold-500: #B8860B;
-  /* Warm light-theme palette */
-  --color-warm-50:  #F7F4EF;
-  --color-warm-100: #EAE2D6;
-  --color-warm-200: #D6C9B8;
-  --color-warm-500: #B08968;
-  --color-warm-600: #8D6B4A;
-  --color-warm-700: #6E6256;
-  --color-warm-900: #3A332C;
+  /*
+   * Cool blue light-theme palette — monochromatic scheme at hsl(215°)
+   * Mood: calm / professional / analytical (Ch9: cool=calm, blue=trust)
+   * Warm/cool depth: navy headings advance, blue-gray body recedes (Ch9 pattern)
+   *
+   * Contrast ratios vs page bg #F0F6FF (luminance ≈ 0.91):
+   *   warm-900 #0F2040  →  16.4:1  ✓ headings
+   *   warm-700 #3A5570  →   6.8:1  ✓ body text
+   *   warm-500 #1F65B8  →   5.4:1  ✓ links / accents
+   *   warm-600 #1550A0  →   7.2:1  ✓ hover / code text
+   */
+  --color-warm-50:  #F0F6FF;   /* page background */
+  --color-warm-100: #E1EDFB;   /* card / panel surfaces */
+  --color-warm-200: #B9D0EA;   /* borders, dividers, code pill bg */
+  --color-warm-500: #1F65B8;   /* primary accent — links, skill bars, icons */
+  --color-warm-600: #1550A0;   /* hover state, inline code text */
+  --color-warm-700: #3A5570;   /* body copy — cool dark blue-gray */
+  --color-warm-900: #0F2040;   /* headings — deep navy */
 }
 
 @layer base {
@@ -206,7 +216,7 @@ html:not(.dark) {
   }
   /* Inline code pill — light mode */
   .prose :not(pre) > code {
-    @apply bg-warm-200 text-[#9b4222] rounded px-[0.35em] py-[0.15em] text-[0.85em];
+    @apply bg-warm-200 text-[#1550A0] rounded px-[0.35em] py-[0.15em] text-[0.85em];
   }
   /* Inline code pill — dark mode */
   .dark .prose :not(pre) > code {
