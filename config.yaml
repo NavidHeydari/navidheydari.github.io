@@ -7,6 +7,13 @@ services:
   googleAnalytics:
     id: G-XB245TPDQJ
 
+markup:
+  highlight:
+    style: monokai          # dark palette — works on the dark pre bg
+    noClasses: true         # inline styles; no separate chroma CSS file needed
+    lineNos: false
+    codeFences: true
+
 ignoreLogs:
   - warning-goldmark-raw-html
 title: Navid Heydari - Principal Architect (AI Architect)
