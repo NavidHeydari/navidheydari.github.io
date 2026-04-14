@@ -8,12 +8,12 @@ draft: false
 ---
 
 
-# High-Performance Observability Pipeline
-## (AWS + Databricks + PyTorch/TensorFlow)
+## High-Performance Observability Pipeline
+#### (AWS + Databricks + PyTorch/TensorFlow)
 
 ---
 
-# 1. Overview
+## 1. Overview
 
 This document describes a production-grade, high-performance observability pipeline designed for:
 
@@ -24,7 +24,7 @@ This document describes a production-grade, high-performance observability pipel
 
 ---
 
-# 2. Architecture
+## 2. Architecture
 
 ```
 [Applications / Microservices]
@@ -56,32 +56,32 @@ This document describes a production-grade, high-performance observability pipel
 
 ---
 
-# 3. Ingestion Layer (AWS Optimized)
+## 3. Ingestion Layer (AWS Optimized)
 
-## Option A: Kinesis (Fully Managed)
+#### Option A: Kinesis (Fully Managed)
 - Use for simpler ops
 - Auto-scaling shards
 - Lower operational overhead
 
-## Option B: MSK (Kafka)
+#### Option B: MSK (Kafka)
 - Use for high throughput + replay
 - Better for complex pipelines
 
-### Best Practice
+###### Best Practice
 - Use partitioning by:
   - service_name
   - region
 
 ---
 
-# 4. Processing Layer (Databricks)
+## 4. Processing Layer (Databricks)
 
-## Structured Streaming Design
+#### Structured Streaming Design
 
 - Input: Kafka / Kinesis
 - Output: Delta Lake tables
 
-### Example
+###### Example
 ```python
 from pyspark.sql import SparkSession
 
@@ -102,49 +102,49 @@ processed.writeStream \
 
 ---
 
-# 5. Storage Strategy (Cost Optimized)
+## 5. Storage Strategy (Cost Optimized)
 
-## Logs
+#### Logs
 - Store in S3 (cheap)
 - Format: Delta Lake / Parquet
 - Partition by:
   - date
   - service
 
-## Metrics
+#### Metrics
 - Use Amazon Managed Prometheus
 - Downsample before storage
 
-## Traces
+#### Traces
 - Store sampled traces only
 - Backend: S3 via Tempo
 
 ---
 
-# 6. Cost Optimization Strategies
+## 6. Cost Optimization Strategies
 
-## 1. Sampling
+#### 1. Sampling
 
 - Head-based sampling: 1–10%
 - Tail-based sampling for errors: 100%
 
-## 2. Tiered Storage
+#### 2. Tiered Storage
 
 - Hot: Databricks Delta (1–3 days)
 - Warm: S3 Standard (7–30 days)
 - Cold: S3 Glacier (long-term)
 
-## 3. Compression
+#### 3. Compression
 
 - Use Parquet + Snappy
 - Reduces storage by ~70%
 
-## 4. Auto Scaling
+#### 4. Auto Scaling
 
 - Databricks autoscaling clusters
 - Use spot instances where possible
 
-## 5. Cardinality Control
+#### 5. Cardinality Control
 
 Avoid:
 - user_id in metrics
@@ -154,22 +154,22 @@ Use:
 
 ---
 
-# 7. ML Layer (TensorFlow / PyTorch)
+## 7. ML Layer (TensorFlow / PyTorch)
 
-## Use Cases
+#### Use Cases
 
 - Anomaly detection
 - Latency prediction
 - Failure prediction
 
-## Pipeline
+#### Pipeline
 
 1. Read Delta tables from Databricks
 2. Feature engineering
 3. Train model (TensorFlow / PyTorch)
 4. Deploy model for inference
 
-### Example (PyTorch)
+###### Example (PyTorch)
 ```python
 import torch
 import torch.nn as nn
@@ -185,15 +185,15 @@ class AnomalyModel(nn.Module):
 
 ---
 
-# 8. Query Layer
+## 8. Query Layer
 
-## Tools
+#### Tools
 
 - Databricks SQL
 - Amazon Athena
 - Grafana dashboards
 
-## Key Queries
+#### Key Queries
 
 - p95 latency per service
 - error rate trends
@@ -201,7 +201,7 @@ class AnomalyModel(nn.Module):
 
 ---
 
-# 9. Performance Targets
+## 9. Performance Targets
 
 - Ingestion: Millions events/sec
 - Processing latency: < 5 seconds
@@ -209,7 +209,7 @@ class AnomalyModel(nn.Module):
 
 ---
 
-# 10. Key Takeaways
+## 10. Key Takeaways
 
 - Treat observability as a data platform
 - Use streaming-first architecture
@@ -218,7 +218,7 @@ class AnomalyModel(nn.Module):
 
 ---
 
-# 11. Future Enhancements
+## 11. Future Enhancements
 
 - Real-time anomaly alerts
 - Auto-remediation pipelines

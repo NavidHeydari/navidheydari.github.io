@@ -48,6 +48,10 @@ Key partials:
 - `layouts/partials/social.html` — social links from `data/social.json`; links open in new tab
 - `layouts/partials/accordion/*.html` — one file per portfolio section
 
+Blog-specific templates:
+- `layouts/blog/list.html` — blog post listing; left panel is the profile card (`view-transition-name: profile-card`)
+- `layouts/blog/single.html` — individual post; left panel is the ToC (`view-transition-name: toc-card`); right panel is the archive sidebar
+
 ## Content changes
 
 Edit JSON files in `data/` to update portfolio content. No template changes needed for content.
@@ -67,6 +71,26 @@ Dark mode accent is gold (not the default Tailwind yellow). Tokens are in `asset
 
 Use `gold-300` / `gold-500` Tailwind classes anywhere yellow would have been used.
 
+## Cross-document view transitions
+
+The site uses the CSS View Transitions API for page-to-page navigation (`@view-transition { navigation: auto }` in `assets/main.css`). Key named slots:
+
+| Name | Element | Pages | Animation |
+|---|---|---|---|
+| `profile-card` | profile photo + social links | `index.html`, `blog/list.html` | 280ms crossfade + subtle scale (`vt-card-out` / `vt-card-in`) |
+| `toc-card` | ToC panel card | `blog/single.html` only | 150ms fade-out (old), 200ms `vt-card-in` (new background shell) |
+
+**ToC reveal sequence (post → post navigation):**
+1. Old ToC fades out in 150ms via `vt-toc-out`.
+2. New page arrives with `#toc-content` pre-hidden (`max-height:0; opacity:0; overflow:hidden` inline), so the captured `::view-transition-new(toc-card)` snapshot is a compact background-only box.
+3. After `viewTransition.finished` resolves (via the `pagereveal` event), `revealToc()` animates `max-height` to the element's natural `scrollHeight` and fades opacity to 1.
+4. On `transitionend`, `max-height` is cleared to `none` so the panel reflows freely.
+5. `initTocObserver()` (IntersectionObserver for active-heading highlighting) is called from `revealToc()` so it only runs after links are visible.
+
+Fallback behaviour: browsers without `onpagereveal` call `revealToc()` on `DOMContentLoaded`; `prefers-reduced-motion: reduce` skips animation and reveals instantly.
+
+Do not give any other element `view-transition-name: toc-card` or `view-transition-name: profile-card` — duplicate names break the transition.
+
 ## Deployment
 
 Push to `main` → GitHub Actions builds with `hugo --minify` and deploys to GitHub Pages automatically. The workflow file is `.github/workflows/deploy.yml`.
@@ -77,3 +101,5 @@ Push to `main` → GitHub Actions builds with `hugo --minify` and deploys to Git
 - Do not introduce a separate CSS/JS build step — Hugo's built-in Tailwind transform handles it.
 - Do not add `yellow-*` Tailwind classes for dark mode accents — use `gold-300` / `gold-500`.
 - Do not commit the `public/` directory — it is gitignored build output.
+- Do not assign `view-transition-name: profile-card` to the ToC card on blog single pages — it has its own `toc-card` slot with different animation behaviour.
+- Do not move `initTocObserver()` out of `revealToc()` — the observer must be set up after the ToC links become visible, otherwise IntersectionObserver callbacks fire on invisible elements.

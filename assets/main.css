@@ -69,6 +69,32 @@ html:not(.dark) {
   }
 }
 
+/*
+ * ToC card (blog post pages): during post→post navigation the card
+ * shows only its background while transitioning.
+ *
+ * Old state fades out quickly; new state is pre-rendered with the ToC
+ * content hidden (max-height:0 via inline style set in the template).
+ * The card-in keyframe brings in the background shell only.
+ * JavaScript reveals the content with an expand + fade after the
+ * transition finishes.
+ */
+@keyframes vt-toc-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(toc-card) {
+    animation: 150ms ease-in  both vt-toc-out;
+    mix-blend-mode: normal;
+  }
+  ::view-transition-new(toc-card) {
+    animation: 200ms ease-out both vt-card-in;
+    mix-blend-mode: normal;
+  }
+}
+
 @theme {
   --color-gold-300: #D4AF37;
   --color-gold-500: #B8860B;

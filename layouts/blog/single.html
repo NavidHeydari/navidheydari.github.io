@@ -4,13 +4,15 @@
   {{/* ── Left: Table of Contents ── */}}
   <div class="md:col-span-2 md:sticky md:top-0 md:self-start toc-panel">
     <div class="bg-warm-100 dark:bg-darker drop-shadow-md p-3 rounded-lg"
-         style="view-transition-name: profile-card">
+         style="view-transition-name: toc-card">
       <p class="toc-heading">Contents</p>
-      {{ if .TableOfContents }}
-        {{ .TableOfContents }}
-      {{ else }}
-        <p class="text-xs text-warm-700 dark:text-gray-400 italic">No headings.</p>
-      {{ end }}
+      <div id="toc-content" style="max-height:0;opacity:0;overflow:hidden">
+        {{ if .TableOfContents }}
+          {{ .TableOfContents }}
+        {{ else }}
+          <p class="text-xs text-warm-700 dark:text-gray-400 italic">No headings.</p>
+        {{ end }}
+      </div>
     </div>
     {{ partial "footer" . }}
   </div>
@@ -103,36 +105,84 @@
 {{ define "scripts" }}
 <script>
 (function () {
-  /* ── ToC active-heading highlighting ── */
-  const toc = document.querySelector('#TableOfContents');
-  if (!toc) return;
+  /* ── ToC content reveal after view transition ── */
+  const revealToc = () => {
+    const wrap = document.getElementById('toc-content');
+    if (!wrap || wrap._revealed) return;
+    wrap._revealed = true;
 
-  const headings = Array.from(
-    document.querySelectorAll('article h1, article h2, article h3, article h4, article h5')
-  );
-  const tocLinks = Array.from(toc.querySelectorAll('a'));
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduced) {
+      wrap.style.maxHeight = 'none';
+      wrap.style.opacity   = '1';
+      wrap.style.overflow  = '';
+      initTocObserver();
+      return;
+    }
 
-  const setActive = (id) => {
-    tocLinks.forEach(a => {
-      if (a.getAttribute('href') === '#' + id) {
-        a.classList.add('toc-active');
-      } else {
-        a.classList.remove('toc-active');
+    /* Expand to natural height, then fade in */
+    const natural = wrap.scrollHeight;
+    wrap.style.transition = 'max-height 0.4s ease, opacity 0.35s ease';
+    wrap.style.maxHeight  = natural + 'px';
+    wrap.style.opacity    = '1';
+    wrap.addEventListener('transitionend', (e) => {
+      if (e.propertyName === 'max-height') {
+        wrap.style.maxHeight = 'none';
+        wrap.style.overflow  = '';
+        wrap.style.transition = '';
       }
-    });
+    }, { once: true });
+    initTocObserver();
   };
 
-  const observer = new IntersectionObserver(
-    (entries) => {
-      const visible = entries.filter(e => e.isIntersecting);
-      if (visible.length > 0) {
-        setActive(visible[0].target.id);
+  /* Use pagereveal when available so reveal starts after VT finishes */
+  if ('onpagereveal' in window) {
+    window.addEventListener('pagereveal', (e) => {
+      if (e.viewTransition) {
+        e.viewTransition.finished.then(revealToc);
+      } else {
+        revealToc();
       }
-    },
-    { rootMargin: '0px 0px -70% 0px', threshold: 0 }
-  );
+    });
+  } else {
+    /* Fallback: reveal on DOMContentLoaded */
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', revealToc);
+    } else {
+      revealToc();
+    }
+  }
 
-  headings.forEach(h => { if (h.id) observer.observe(h); });
+  /* ── ToC active-heading highlighting ── */
+  function initTocObserver() {
+    const toc = document.querySelector('#TableOfContents');
+    if (!toc) return;
+
+    const headings = Array.from(
+      document.querySelectorAll('article h1, article h2, article h3, article h4, article h5')
+    );
+    const tocLinks = Array.from(toc.querySelectorAll('a'));
+
+    const setActive = (id) => {
+      tocLinks.forEach(a => {
+        if (a.getAttribute('href') === '#' + id) {
+          a.classList.add('toc-active');
+        } else {
+          a.classList.remove('toc-active');
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries.filter(e => e.isIntersecting);
+        if (visible.length > 0) setActive(visible[0].target.id);
+      },
+      { rootMargin: '0px 0px -70% 0px', threshold: 0 }
+    );
+
+    headings.forEach(h => { if (h.id) observer.observe(h); });
+  }
 
   /* ── Auto-open the current month in the archive panel ── */
   const now = new Date();
