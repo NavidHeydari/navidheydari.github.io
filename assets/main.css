@@ -9,26 +9,41 @@
 /*
  * Theme-aware background for both <html> and the ::view-transition overlay.
  *
- * --vt-bg is a CSS variable set here and inherited by ::view-transition.
- * The overlay is an independent pseudo-element painted above everything;
- * without an explicit background it defaults to white, causing the flash.
+ * WHY direct selectors instead of CSS variables:
+ * ::view-transition lives in the browser top-layer shadow tree. Chrome has
+ * a known race where var() inside ::view-transition can be unresolved for
+ * one or two frames at the start of a cross-document transition, exposing
+ * the UA default (white) background and causing a visible flash.
  *
- * stone-900 (#1c1917) = "darkest" (default theme)
- * warm-50   (#F7F4EF) = light mode
+ * Direct class selectors on html resolve synchronously with the CSSOM and
+ * are guaranteed to be correct before any transition frame is painted.
+ *
+ * color-scheme tells the browser the expected palette before CSS is applied,
+ * preventing the OS/UA from defaulting to a white system background during
+ * the navigation timeline.
+ *
+ * stone-900 (#1c1917) = dark mode (site default)
+ * cool-50   (#F0F6FF) = light mode
  */
 html {
   background-color: #1c1917;
-  --vt-bg: #1c1917;
+  color-scheme: dark;           /* prevent white UA default pre-CSS */
 }
 html:not(.dark) {
   background-color: #F0F6FF;
-  --vt-bg: #F0F6FF;
+  color-scheme: light;
 }
 
-/* The overlay itself must carry the right background so no white leaks
-   through holes left by view-transition-named elements in the root snapshot. */
+/* ::view-transition is the top-layer overlay that fills the viewport.
+   Without an explicit background it defaults to white, flashing through:
+   (a) the holes left by view-transition-named elements in the root snapshot,
+   (b) the transparent areas of image-pairs during normal-mode crossfades.
+   Direct selectors avoid the CSS-variable race described above. */
 ::view-transition {
-  background-color: var(--vt-bg, #1c1917);
+  background-color: #1c1917;    /* dark default */
+}
+html:not(.dark)::view-transition {
+  background-color: #F0F6FF;    /* light mode override */
 }
 
 /* Suppress the full-page crossfade — page content switches instantly.
@@ -85,6 +100,21 @@ html:not(.dark) {
 }
 
 @media (prefers-reduced-motion: no-preference) {
+  /*
+   * toc-card uses normal blend (not plus-lighter) because old and new ToC
+   * content differ between posts. Normal blend leaves the image-pair
+   * container partially transparent during the crossfade (≈31% at midpoint),
+   * which would expose the ::view-transition background.
+   *
+   * Setting background-color on the image-pair container directly fills that
+   * gap without changing the blend mode or the animation timing.
+   */
+  ::view-transition-image-pair(toc-card) {
+    background-color: #1c1917;   /* dark default */
+  }
+  html:not(.dark) ::view-transition-image-pair(toc-card) {
+    background-color: #F0F6FF;   /* light mode */
+  }
   ::view-transition-old(toc-card) {
     animation: 150ms ease-in  both vt-toc-out;
     mix-blend-mode: normal;
