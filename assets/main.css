@@ -99,22 +99,39 @@ html:not(.dark)::view-transition {
   to   { opacity: 0; }
 }
 
+/*
+ * Image-pair backgrounds — theme-matched fill for the transparent gap that
+ * appears during any transition where:
+ *   (a) only one image exists (one-sided fade: the card isn't present on
+ *       one of the two pages, so old or new fades from/to fully transparent),
+ *   (b) toc-card uses mix-blend-mode:normal, leaving ≈31% transparent at the
+ *       crossfade midpoint.
+ *
+ * Must be OUTSIDE any @media block — these are visual fills, not animations,
+ * and must apply regardless of the user's reduced-motion preference.
+ *
+ * Selector syntax: html:not(.dark)::view-transition-image-pair(name)
+ * is a COMPOUND selector (pseudo-element of a qualified html element).
+ * No space before :: — a space would create a DESCENDANT combinator, which
+ * is invalid for pseudo-elements and silently dropped by browsers, meaning
+ * the dark default would win in every theme.
+ *
+ * profile-card: plus-lighter guarantees combined-alpha = 1.0 when BOTH images
+ * exist, but on cross-type navigations (blog post ↔ home) one side is absent.
+ * During the one-sided fade the image-pair is transparent, AND it stacks above
+ * the other named element in the same column — without a background its dark
+ * UA default obscures whatever is fading in beneath it.
+ */
+::view-transition-image-pair(profile-card),
+::view-transition-image-pair(toc-card) {
+  background-color: #1c1917;   /* dark default */
+}
+html:not(.dark)::view-transition-image-pair(profile-card),
+html:not(.dark)::view-transition-image-pair(toc-card) {
+  background-color: #F0F6FF;   /* light mode */
+}
+
 @media (prefers-reduced-motion: no-preference) {
-  /*
-   * toc-card uses normal blend (not plus-lighter) because old and new ToC
-   * content differ between posts. Normal blend leaves the image-pair
-   * container partially transparent during the crossfade (≈31% at midpoint),
-   * which would expose the ::view-transition background.
-   *
-   * Setting background-color on the image-pair container directly fills that
-   * gap without changing the blend mode or the animation timing.
-   */
-  ::view-transition-image-pair(toc-card) {
-    background-color: #1c1917;   /* dark default */
-  }
-  html:not(.dark) ::view-transition-image-pair(toc-card) {
-    background-color: #F0F6FF;   /* light mode */
-  }
   ::view-transition-old(toc-card) {
     animation: 150ms ease-in  both vt-toc-out;
     mix-blend-mode: normal;
