@@ -194,6 +194,31 @@
       detail.setAttribute('open', '');
     }
   });
+
+  /* ── Prevent toc-card ghost when leaving to a non-post page ──
+   *
+   * The root transition fires instantly (animation:none). If we kept
+   * view-transition-name:toc-card, the browser would play the 150ms
+   * vt-toc-out fade ABOVE the already-rendered new page, producing
+   * a visible ghost of the old ToC panel.
+   *
+   * pageswap fires on the OLD page before the snapshot is taken.
+   * Stripping the name here folds the card into the instant root
+   * snapshot, so nothing lingers over the incoming page.
+   */
+  if ('onpageswap' in window) {
+    window.addEventListener('pageswap', (e) => {
+      if (!e.viewTransition) return;
+      try {
+        const dest = new URL(e.activation?.entry?.url ?? location.href);
+        // Keep the named slot only for post → post transitions.
+        if (!/\/blog\/.+/.test(dest.pathname)) {
+          const card = document.querySelector('[style*="view-transition-name: toc-card"]');
+          if (card) card.style.viewTransitionName = 'none';
+        }
+      } catch (_) { /* URL parse error — leave name in place, harmless */ }
+    });
+  }
 })();
 </script>
 {{ end }}

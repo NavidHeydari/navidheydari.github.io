@@ -47,41 +47,17 @@ html:not(.dark)::view-transition {
 }
 
 /* Suppress the full-page crossfade — page content switches instantly.
-   Only the named profile-card element gets a custom animation. */
+   Named elements (toc-card) handle their own animations independently. */
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation: none;
   mix-blend-mode: normal;
 }
 
-/*
- * Profile-card morph: simultaneous crossfade + very subtle scale.
- *
- * KEY: mix-blend-mode: plus-lighter on both old and new means their
- * combined opacity always sums to 1.0 throughout the crossfade, so
- * the isolated image-pair background never bleeds through — no white
- * gap between the outgoing and incoming card states.
- *
- * No delay on vt-card-in: old and new animate in parallel (no gap).
- */
-@keyframes vt-card-out {
-  from { opacity: 1; scale: 1;    }
-  to   { opacity: 0; scale: 0.94; }
-}
+/* toc-card fade-in keyframe (blog post → blog post navigation) */
 @keyframes vt-card-in {
   from { opacity: 0; scale: 0.94; }
   to   { opacity: 1; scale: 1;    }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  ::view-transition-old(profile-card) {
-    animation: 280ms ease-in  both vt-card-out;
-    mix-blend-mode: plus-lighter;
-  }
-  ::view-transition-new(profile-card) {
-    animation: 280ms ease-out both vt-card-in; /* no delay — starts immediately */
-    mix-blend-mode: plus-lighter;
-  }
 }
 
 /*
@@ -100,33 +76,19 @@ html:not(.dark)::view-transition {
 }
 
 /*
- * Image-pair backgrounds — theme-matched fill for the transparent gap that
- * appears during any transition where:
- *   (a) only one image exists (one-sided fade: the card isn't present on
- *       one of the two pages, so old or new fades from/to fully transparent),
- *   (b) toc-card uses mix-blend-mode:normal, leaving ≈31% transparent at the
- *       crossfade midpoint.
+ * toc-card image-pair background — theme-matched fill for the transparent gap
+ * during post→post navigation (mix-blend-mode:normal leaves ≈31% transparent
+ * at the crossfade midpoint).
  *
- * Must be OUTSIDE any @media block — these are visual fills, not animations,
- * and must apply regardless of the user's reduced-motion preference.
+ * Must be OUTSIDE any @media block — visual fill, not an animation.
  *
- * Selector syntax: html:not(.dark)::view-transition-image-pair(name)
- * is a COMPOUND selector (pseudo-element of a qualified html element).
- * No space before :: — a space would create a DESCENDANT combinator, which
- * is invalid for pseudo-elements and silently dropped by browsers, meaning
- * the dark default would win in every theme.
- *
- * profile-card: plus-lighter guarantees combined-alpha = 1.0 when BOTH images
- * exist, but on cross-type navigations (blog post ↔ home) one side is absent.
- * During the one-sided fade the image-pair is transparent, AND it stacks above
- * the other named element in the same column — without a background its dark
- * UA default obscures whatever is fading in beneath it.
+ * Selector syntax: html:not(.dark)::view-transition-image-pair(toc-card)
+ * is a COMPOUND selector. No space before :: — a space creates a DESCENDANT
+ * combinator (invalid for pseudo-elements, silently dropped by browsers).
  */
-::view-transition-image-pair(profile-card),
 ::view-transition-image-pair(toc-card) {
   background-color: #1c1917;   /* dark default */
 }
-html:not(.dark)::view-transition-image-pair(profile-card),
 html:not(.dark)::view-transition-image-pair(toc-card) {
   background-color: #F0F6FF;   /* light mode */
 }
