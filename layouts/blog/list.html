@@ -3,14 +3,12 @@
 
   {{/* ── Left: profile card (same as homepage) ── */}}
   <div class="md:col-span-2 md:sticky md:top-0 md:self-start">
-    <div class="bg-warm-100 dark:bg-darker drop-shadow-md p-2 rounded-t-lg"
-         style="view-transition-name: profile-card">
+    <div class="bg-warm-100 dark:bg-darker drop-shadow-md p-2 rounded-lg">
       <div class="flex flex-col justify-center">
         {{ partial "profilePhoto" . }}
         <div class="px-2 text-center">{{ partial "social" . }}</div>
       </div>
     </div>
-    {{ partial "footer" . }}
   </div>
 
   {{/* ── Right: post listing panel ── */}}
