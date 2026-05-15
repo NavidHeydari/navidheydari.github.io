@@ -144,3 +144,5 @@ The accent colour in dark mode is gold, defined as CSS custom properties in `ass
 The site deploys automatically to GitHub Pages when a commit is pushed to the `main` branch. The workflow (`.github/workflows/deploy.yml`) installs Hugo extended and npm dependencies before building.
 
 To trigger a manual deploy, use the **Run workflow** button in the GitHub Actions tab.
+
+TODO: add the embedding links and sections for certificates : embed this <div data-iframe-width="150" data-iframe-height="270" data-share-badge-id="a227b802-e445-45d4-b64b-0e44fc4b698f" data-share-badge-host="https://www.credly.com"></div><script type="text/javascript" async src="//cdn.credly.com/assets/utilities/embed.js"></script> 
