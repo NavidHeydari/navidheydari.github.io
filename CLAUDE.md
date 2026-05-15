@@ -1,22 +1,12 @@
-# CLAUDE.md — Project Guide for Claude Code
+# CLAUDE.md
 
-This file gives Claude Code the context it needs to work in this repository effectively.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## What this project is
 
 A personal portfolio site for Navid Heydari (Principal Architect / AI Architect). It is a static Hugo site deployed to GitHub Pages. There is no backend, no database, and no JS bundler — Hugo renders everything at build time, with Tailwind CSS processed via Hugo's built-in transform.
 
-## Tech stack
-
-| Tool | Version | Role |
-|---|---|---|
-| Hugo extended | 0.160.1 | Static site generator |
-| Tailwind CSS | 4.2.2 | Utility CSS (processed by Hugo, not a separate build step) |
-| @tailwindcss/typography | 0.5.19 | Prose styles for blog/content pages |
-| Bootstrap Icons | 1.13.1 | Icon font (CDN) |
-| Node.js | 22 | Required only for npm dependencies used by Hugo's Tailwind transform |
-
-## How to run
+## Commands
 
 ```bash
 npm install        # only needed once, or after package.json changes
@@ -24,76 +14,75 @@ hugo server        # live-reload dev server at http://localhost:1313
 hugo build         # production build into ./public
 ```
 
-No separate `npm run build` or CSS compile step — Hugo drives everything.
-
-## Repository layout
-
-- `config.yaml` — site-wide settings, accordion order, theme params
-- `assets/main.css` — Tailwind CSS entry point; defines custom gold theme tokens
-- `tailwind.config.js` — Tailwind v4 config (content paths, dark mode, typography plugin)
-- `data/*.json` — all portfolio content (profile, experiences, skills, etc.)
-- `layouts/` — all Go/Hugo templates; fully self-contained, no theme submodule
-- `static/` — copied as-is: `favicon.ico`, `images/profile_pic.jpg`
-- `content/_index.md` — homepage front matter
-- `package.json` / `package-lock.json` — Tailwind CSS npm deps
-- `.github/workflows/deploy.yml` — GitHub Actions: installs Hugo + npm, runs `hugo --minify`
-
-## Templates
-
-All templates are in `layouts/`. There is no theme submodule — the theme was inlined from aafu in this branch and the submodule removed. Editing any file under `layouts/` directly changes the live site.
-
-Key partials:
-- `layouts/partials/head.html` — `<head>`: CDN links, Tailwind CSS inclusion, all inline JS (accordion logic, theme toggle)
-- `layouts/partials/header.html` — top nav (Home link + dark/light toggle icon)
-- `layouts/partials/social.html` — social links from `data/social.json`; links open in new tab
-- `layouts/partials/accordion/*.html` — one file per portfolio section
-
-Blog-specific templates:
-- `layouts/blog/list.html` — blog post listing; left panel is the profile card (`view-transition-name: profile-card`)
-- `layouts/blog/single.html` — individual post; left panel is the ToC (`view-transition-name: toc-card`); right panel is the archive sidebar
-
-## Content changes
-
-Edit JSON files in `data/` to update portfolio content. No template changes needed for content.
-
-To add/remove/reorder accordion sections, edit `params.accordion` in `config.yaml`. Available section names: `about_me`, `experiences`, `education`, `publications`, `skills`, `projects`, `hobbies`.
-
-## Colour scheme
-
-Dark mode accent is gold (not the default Tailwind yellow). Tokens are in `assets/main.css`:
-
-```css
-@theme {
-  --color-gold-300: #D4AF37;   /* links, borders, icons */
-  --color-gold-500: #B8860B;   /* hover states, accordion text, skill bars */
-}
+To create a new blog post using the archetype (sets title, date, tags, draft):
+```bash
+hugo new content/blog/my-post-name.md
 ```
 
-Use `gold-300` / `gold-500` Tailwind classes anywhere yellow would have been used.
+**Tests:** Open `test/accordion.test.html` directly in a browser — it is a self-contained HTML test runner for accordion logic, theme toggle, and ARIA attributes. No build step needed.
+
+## Architecture
+
+The site has three page types, each with a distinct layout:
+
+**Homepage (`layouts/index.html`)** — 7-column grid: profile photo/social left, accordion sections centre, recent blog posts right.
+
+**Blog list (`layouts/blog/list.html`)** — 7-column grid: profile card left (view-transition-name: `profile-card`), post list centre, tag/category sidebar right.
+
+**Blog post (`layouts/blog/single.html`)** — 8-column grid: ToC panel left (view-transition-name: `toc-card`), post content centre, archive calendar sidebar right.
+
+**Data model:** All portfolio content lives in `data/*.json`. The accordion reads `hugo.Data.<section_name>` for title, icon, and content. Section order and visibility is controlled entirely by `params.accordion` in `config.yaml` — no template changes needed to add/remove sections. Available section names: `about_me`, `experiences`, `education`, `publications`, `skills`, `projects`, `hobbies`.
+
+**Accordion logic** lives in an inline `<script>` in `layouts/partials/head.html` (`expandAccordion()`). It is a single-open accordion: clicking a section closes all others. The skills section (`panel_id: skill-panel`) gets special treatment — navigating away from it resets `.skill-percent` bar widths to 0 so they re-animate on re-open.
+
+**Skill bar animation:** Skill bars are DOM elements with class `skill-percent`. Their `width` is set to `0` on page load and animated to the data value only when the skills panel opens. The selector is class-based (`.skill-percent`) — never use `id="skill-percent"` since multiple bars exist.
+
+## Colour system
+
+Two palettes are defined in `assets/main.css` under `@theme`:
+
+**Dark mode accent (gold):**
+```css
+--color-gold-300: #D4AF37;   /* links, borders, icons */
+--color-gold-500: #B8860B;   /* hover states, accordion text, skill bars */
+```
+
+**Light mode palette (cool blue-gray `warm-*`):**
+```css
+--color-warm-50:  #F0F6FF;   /* page background */
+--color-warm-100: #E1EDFB;   /* card / panel surfaces */
+--color-warm-200: #B9D0EA;   /* borders, dividers, code pill bg */
+--color-warm-500: #1F65B8;   /* primary accent — links, skill bars, icons */
+--color-warm-600: #1550A0;   /* hover state, inline code text */
+--color-warm-700: #3A5570;   /* body copy */
+--color-warm-900: #0F2040;   /* headings */
+```
+
+Dark mode backgrounds use `darkest` (stone-900), `darker` (stone-800), `dark` (stone-700) from `tailwind.config.js`. Use `dark:` variants to switch between the two palettes.
 
 ## Cross-document view transitions
 
-The site uses the CSS View Transitions API for page-to-page navigation (`@view-transition { navigation: auto }` in `assets/main.css`). Key named slots:
+The site uses the CSS View Transitions API (`@view-transition { navigation: auto }`) for page-to-page navigation. Two named slots:
 
-| Name | Element | Pages | Animation |
-|---|---|---|---|
-| `profile-card` | profile photo + social links | `index.html`, `blog/list.html` | 280ms crossfade + subtle scale (`vt-card-out` / `vt-card-in`) |
-| `toc-card` | ToC panel card | `blog/single.html` only | 150ms fade-out (old), 200ms `vt-card-in` (new background shell) |
+| Name | Element | Pages |
+|---|---|---|
+| `profile-card` | profile photo + social links | `index.html`, `blog/list.html` |
+| `toc-card` | ToC panel card | `blog/single.html` only |
 
-**ToC reveal sequence (post → post navigation):**
-1. Old ToC fades out in 150ms via `vt-toc-out`.
-2. New page arrives with `#toc-content` pre-hidden (`max-height:0; opacity:0; overflow:hidden` inline), so the captured `::view-transition-new(toc-card)` snapshot is a compact background-only box.
-3. After `viewTransition.finished` resolves (via the `pagereveal` event), `revealToc()` animates `max-height` to the element's natural `scrollHeight` and fades opacity to 1.
-4. On `transitionend`, `max-height` is cleared to `none` so the panel reflows freely.
-5. `initTocObserver()` (IntersectionObserver for active-heading highlighting) is called from `revealToc()` so it only runs after links are visible.
+**ToC reveal sequence (post → post):** The new page arrives with `#toc-content` pre-hidden (`max-height:0; opacity:0; overflow:hidden` inline style set in the template). After `viewTransition.finished` resolves via the `pagereveal` event, `revealToc()` animates it open. `initTocObserver()` (IntersectionObserver for active-heading highlighting) is called from inside `revealToc()` — do not move it out, as it must run after the ToC links become visible.
 
-Fallback behaviour: browsers without `onpagereveal` call `revealToc()` on `DOMContentLoaded`; `prefers-reduced-motion: reduce` skips animation and reveals instantly.
+**pageswap handler:** When leaving a post for a non-post page, the `toc-card` view-transition-name is stripped so it doesn't ghost over the incoming page.
 
-Do not give any other element `view-transition-name: toc-card` or `view-transition-name: profile-card` — duplicate names break the transition.
+Fallback: browsers without `onpagereveal` call `revealToc()` on `DOMContentLoaded`. `prefers-reduced-motion: reduce` skips animation and reveals instantly.
 
-## Deployment
+## Shortcodes
 
-Push to `main` → GitHub Actions builds with `hugo --minify` and deploys to GitHub Pages automatically. The workflow file is `.github/workflows/deploy.yml`.
+- `{{< figure >}}` — enhanced image/figure shortcode (`layouts/shortcodes/figure.html`)
+- `{{< raw_html >}}` — embed arbitrary HTML in Markdown (`layouts/shortcodes/raw_html.html`)
+
+## Code highlighting
+
+Hugo's built-in Chroma highlighter with `style: monokai` and `noClasses: true` (inline styles, no separate CSS file). Code blocks on dark backgrounds use `pre { background-color: #0F1C2E }` in `tailwind.config.js` typography config.
 
 ## Things to avoid
 
@@ -101,5 +90,10 @@ Push to `main` → GitHub Actions builds with `hugo --minify` and deploys to Git
 - Do not introduce a separate CSS/JS build step — Hugo's built-in Tailwind transform handles it.
 - Do not add `yellow-*` Tailwind classes for dark mode accents — use `gold-300` / `gold-500`.
 - Do not commit the `public/` directory — it is gitignored build output.
-- Do not assign `view-transition-name: profile-card` to the ToC card on blog single pages — it has its own `toc-card` slot with different animation behaviour.
-- Do not move `initTocObserver()` out of `revealToc()` — the observer must be set up after the ToC links become visible, otherwise IntersectionObserver callbacks fire on invisible elements.
+- Do not assign `view-transition-name: profile-card` or `view-transition-name: toc-card` to any other element — duplicate names break transitions.
+- Do not move `initTocObserver()` out of `revealToc()`.
+- Do not use `id="skill-percent"` — use the `.skill-percent` class selector; multiple bars share it.
+
+## Deployment
+
+Push to `main` → GitHub Actions builds with `hugo --minify` and deploys to GitHub Pages. Google Analytics is injected only in production builds (`hugo.IsProduction`).
