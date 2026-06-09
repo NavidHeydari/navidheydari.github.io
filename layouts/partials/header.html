@@ -1,7 +1,7 @@
 <header
   class="nav flex flex-row row py-2 mb-6 w-full border-b border-warm-200 dark:border-gray-700 justify-between"
 >
-  <div>
+  <div class="flex gap-4">
     <a class="nav-menu-item" href="{{ .Site.BaseURL }}">Home</a>
   </div>
   <div>
@@ -15,5 +15,3 @@
     ></i>
   </div>
 </header>
-
-{{ partial "toggleTheme.html" . }}

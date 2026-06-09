@@ -1,0 +1,38 @@
+{{/* Fetches and normalises a Substack RSS feed.
+     Accepts: dict with "feedURL".
+     Returns:  slice of maps — {title, url, date (time.Time), dateUnix, description}.
+     Returns empty slice on network error (error is warnf'd, not fatal). */}}
+{{ $feedURL := .feedURL }}
+{{ $items := slice }}
+{{ with try (resources.GetRemote $feedURL) }}
+  {{ with .Err }}
+    {{ warnf "Could not fetch Substack feed (%s): %s" $feedURL . }}
+  {{ else with .Value }}
+    {{ $data := . | transform.Unmarshal }}
+    {{ $raw := slice }}
+    {{ if $data.channel }}
+      {{ $raw = $data.channel.item }}
+    {{ else if $data.rss }}
+      {{ $raw = $data.rss.channel.item }}
+    {{ end }}
+    {{ $list := slice }}
+    {{ if reflect.IsSlice $raw }}
+      {{ $list = $raw }}
+    {{ else if $raw }}
+      {{ $list = slice $raw }}
+    {{ end }}
+    {{ range $list }}
+      {{ $item := . }}
+      {{ $t := now }}
+      {{ with index $item "pubDate" }}{{ $t = time.AsTime . }}{{ end }}
+      {{ $items = $items | append (dict
+        "title"       (index $item "title")
+        "url"         (index $item "link")
+        "date"        $t
+        "dateUnix"    $t.Unix
+        "description" (index $item "description")
+      ) }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+{{ return $items }}

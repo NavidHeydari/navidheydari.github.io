@@ -1,17 +1,43 @@
 {{ define "main" }}
+{{ $feedURL := printf "%s/feed" (strings.TrimSuffix "/" .Site.Params.substackURL) }}
+
+{{/* ── Build unified post list ── */}}
+{{ $combined := slice }}
+
+{{ range .Pages }}
+  {{ $combined = $combined | append (dict
+    "title"       .Title
+    "url"         (.Permalink | relURL)
+    "date"        .Date
+    "dateUnix"    .Date.Unix
+    "description" .Description
+    "tags"        .Params.tags
+    "source"      "blog"
+    "readingTime" .ReadingTime
+  ) }}
+{{ end }}
+
+{{ range partial "substack-feed.html" (dict "feedURL" $feedURL) }}
+  {{ $combined = $combined | append (dict
+    "title"       .title
+    "url"         .url
+    "date"        .date
+    "dateUnix"    .dateUnix
+    "description" .description
+    "tags"        slice
+    "source"      "substack"
+    "readingTime" 0
+  ) }}
+{{ end }}
+
+{{ $sorted := sort $combined "dateUnix" "desc" }}
+
 <div class="grid grid-cols-1 md:grid-cols-7 gap-3 py-2 md:items-start">
 
-  {{/* ── Left: profile card (same as homepage) ── */}}
-  <div class="md:col-span-2 md:sticky md:top-0 md:self-start">
-    <div class="bg-warm-100 dark:bg-darker drop-shadow-md p-2 rounded-lg">
-      <div class="flex flex-col justify-center">
-        {{ partial "profilePhoto" . }}
-        <div class="px-2 text-center">{{ partial "social" . }}</div>
-      </div>
-    </div>
-  </div>
+  {{/* ── Left: profile card ── */}}
+  {{ partial "profile-card" . }}
 
-  {{/* ── Right: post listing panel ── */}}
+  {{/* ── Right: unified post listing ── */}}
   <div class="md:col-span-5 md:sticky md:top-0 md:self-start md:overflow-y-auto post-panel">
     <div class="px-1 sm:px-3">
 
@@ -19,39 +45,47 @@
         <i class="bi bi-journal-text mr-2"></i>Blog
       </h1>
 
-      {{ $pages := .Paginator.Pages }}
-      {{ if eq (len $pages) 0 }}
+      {{ if eq (len $sorted) 0 }}
       <p class="text-warm-700 dark:text-gray-400 italic mt-4">No posts yet.</p>
       {{ end }}
 
-      {{ range $pages }}
+      {{ range $sorted }}
+      {{ $isSubstack := eq (index . "source") "substack" }}
       <article class="mt-6 pb-5 border-b border-warm-200 dark:border-gray-700 last:border-0">
-        <a href="{{ .Permalink | relURL }}"
+
+        {{ if $isSubstack }}
+        <a href="{{ index . "url" }}" target="_blank" rel="noopener noreferrer"
            class="text-lg font-semibold text-warm-500 dark:text-gold-300 hover:text-warm-600 dark:hover:text-gold-500 hover:underline leading-snug">
-          {{ .Title }}
+          {{ index . "title" }}
         </a>
-        <p class="text-xs text-warm-700 dark:text-gray-400 mt-0.5 mb-2">
-          {{ .Date.Format "January 2, 2006" }}
-          {{ with .ReadingTime }}&thinsp;·&thinsp;{{ . }} min read{{ end }}
-        </p>
-        {{ with .Description }}
-        <p class="text-sm text-warm-700 dark:text-gray-300 mt-0 leading-relaxed">{{ . }}</p>
+        <span class="inline-flex items-center gap-1 text-xs text-warm-500 dark:text-gold-300 border border-warm-200 dark:border-gold-500/30 rounded px-1.5 py-0.5 ml-2 align-middle">
+          <i class="bi bi-box-arrow-up-right"></i> Substack
+        </span>
+        {{ else }}
+        <a href="{{ index . "url" }}"
+           class="text-lg font-semibold text-warm-500 dark:text-gold-300 hover:text-warm-600 dark:hover:text-gold-500 hover:underline leading-snug">
+          {{ index . "title" }}
+        </a>
         {{ end }}
-        {{ with .Params.tags }}
+
+        <p class="text-xs text-warm-700 dark:text-gray-400 mt-0.5 mb-2">
+          {{ (index . "date").Format "January 2, 2006" }}
+          {{ with index . "readingTime" }}{{ if gt . 0 }}&thinsp;·&thinsp;{{ . }} min read{{ end }}{{ end }}
+        </p>
+
+        {{ with index . "description" }}
+        <p class="text-sm text-warm-700 dark:text-gray-300 mt-0 leading-relaxed">
+          {{ if $isSubstack }}{{ . | plainify | truncate 220 "…" }}{{ else }}{{ . }}{{ end }}
+        </p>
+        {{ end }}
+
+        {{ with index . "tags" }}
         <div class="mt-2 flex flex-wrap gap-1">
-          {{ range . }}
-          <span class="tags">{{ . }}</span>
-          {{ end }}
+          {{ range . }}<span class="tags">{{ . }}</span>{{ end }}
         </div>
         {{ end }}
-      </article>
-      {{ end }}
 
-      {{/* Pagination */}}
-      {{ if gt .Paginator.TotalPages 1 }}
-      <div class="my-6 flex justify-center">
-        {{ template "_internal/pagination.html" (dict "page" . "format" "terse") }}
-      </div>
+      </article>
       {{ end }}
 
     </div>

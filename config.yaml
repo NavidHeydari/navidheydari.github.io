@@ -19,6 +19,7 @@ ignoreLogs:
 title: Navid Heydari - Principal Architect (AI Architect)
 
 params:
+  substackURL: "https://navidheydari.substack.com"
   author: Navid Heydari
   description: Principal Architect (AI Architect) — technology leader designing and scaling cloud-native enterprise systems.
   copyright: "powered by [hugo](https://gohugo.io/) — © Navid Heydari"

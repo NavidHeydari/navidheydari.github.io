@@ -1,0 +1,50 @@
+{{ define "main" }}
+{{ $substackURL := .Site.Params.substackURL }}
+{{ $feedURL := printf "%s/feed" (strings.TrimSuffix "/" $substackURL) }}
+{{ $items := partial "substack-feed.html" (dict "feedURL" $feedURL) }}
+
+<div class="grid grid-cols-1 md:grid-cols-7 gap-3 py-2 md:items-start">
+
+  {{/* ── Left: profile card ── */}}
+  {{ partial "profile-card" . }}
+
+  {{/* ── Right: newsletter listing panel ── */}}
+  <div class="md:col-span-5 md:sticky md:top-0 md:self-start md:overflow-y-auto post-panel">
+    <div class="px-1 sm:px-3">
+
+      <h1 class="!mb-1 pb-2 border-b border-warm-200 dark:border-gray-600">
+        <i class="bi bi-envelope-paper mr-2"></i>Newsletter
+      </h1>
+
+      {{ if $items }}
+        {{ range $items }}
+        <article class="mt-6 pb-5 border-b border-warm-200 dark:border-gray-700 last:border-0">
+          <a href="{{ .url }}" target="_blank" rel="noopener noreferrer"
+             class="text-lg font-semibold text-warm-500 dark:text-gold-300 hover:text-warm-600 dark:hover:text-gold-500 hover:underline leading-snug">
+            {{ .title }}
+          </a>
+          <p class="text-xs text-warm-700 dark:text-gray-400 mt-0.5 mb-2">
+            {{ .date.Format "January 2, 2006" }}
+          </p>
+          {{ with .description }}
+          <p class="text-sm text-warm-700 dark:text-gray-300 mt-0 leading-relaxed">
+            {{ . | plainify | truncate 220 "…" }}
+          </p>
+          {{ end }}
+        </article>
+        {{ end }}
+        <div class="mt-6 text-right">
+          <a href="{{ $substackURL }}" target="_blank" rel="noopener noreferrer"
+             class="text-xs text-warm-500 dark:text-gold-300 hover:text-warm-600 dark:hover:text-gold-500 hover:underline">
+            Subscribe on Substack →
+          </a>
+        </div>
+      {{ else }}
+        <p class="text-warm-700 dark:text-gray-400 italic mt-4">No posts yet.</p>
+      {{ end }}
+
+    </div>
+  </div>
+
+</div>
+{{ end }}
