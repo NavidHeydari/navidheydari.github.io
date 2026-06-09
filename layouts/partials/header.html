@@ -3,9 +3,6 @@
 >
   <div class="flex gap-4">
     <a class="nav-menu-item" href="{{ .Site.BaseURL }}">Home</a>
-    {{ with .Site.Params.substackURL }}
-    <a class="nav-menu-item" href="{{ "/newsletter/" | relURL }}">Newsletter</a>
-    {{ end }}
   </div>
   <div>
     <i
