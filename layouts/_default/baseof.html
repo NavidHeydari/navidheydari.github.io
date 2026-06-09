@@ -9,7 +9,7 @@
       {{- block "main" . }}
       {{- end }}
     </main>
-    {{ if not .Site.Params.theme.singlepage }}
+    {{ if not .Site.Params.theme.singlePage }}
     {{ partial "footer" . }}
     {{ end }}
     {{- block "scripts" . }}{{- end }}

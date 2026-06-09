@@ -2,14 +2,7 @@
 <div class="grid grid-cols-1 md:grid-cols-7 gap-3 py-2 md:items-start">
 
   {{/* ── Left: profile card ── */}}
-  <div class="md:col-span-2 md:sticky md:top-0 md:self-start">
-    <div class="bg-warm-100 dark:bg-darker drop-shadow-md p-2 rounded-lg">
-      <div class="flex flex-col justify-center">
-        {{ partial "profilePhoto" . }}
-        <div class="px-2 text-center">{{ partial "social" . }}</div>
-      </div>
-    </div>
-  </div>
+  {{ partial "profile-card" . }}
 
   {{/* ── Centre: accordion sections ── */}}
   <div class="accordion-column md:col-span-3 md:sticky md:top-0 md:self-start overflow-y-auto" style="max-height: calc(100vh - 6rem)">

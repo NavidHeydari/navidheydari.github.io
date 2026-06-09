@@ -1,9 +1,9 @@
 {{ define "main" }}
-{{ $substackURL := .Site.Params.substackURL }}
-{{ $feedURL := printf "%s/feed" (strings.TrimSuffix "/" $substackURL) }}
+{{ $feedURL := printf "%s/feed" (strings.TrimSuffix "/" .Site.Params.substackURL) }}
 
-{{/* ── 1. Normalise Hugo blog pages ── */}}
+{{/* ── Build unified post list ── */}}
 {{ $combined := slice }}
+
 {{ range .Pages }}
   {{ $combined = $combined | append (dict
     "title"       .Title
@@ -17,56 +17,25 @@
   ) }}
 {{ end }}
 
-{{/* ── 2. Fetch and normalise Substack RSS items ── */}}
-{{ with try (resources.GetRemote $feedURL) }}
-  {{ with .Err }}
-    {{ warnf "Could not fetch Substack feed (%s): %s" $feedURL . }}
-  {{ else with .Value }}
-    {{ $data := . | transform.Unmarshal }}
-    {{ $items := slice }}
-    {{ if $data.channel }}
-      {{ $items = $data.channel.item }}
-    {{ else if $data.rss }}
-      {{ $items = $data.rss.channel.item }}
-    {{ end }}
-    {{ $itemList := slice }}
-    {{ if reflect.IsSlice $items }}
-      {{ $itemList = $items }}
-    {{ else if $items }}
-      {{ $itemList = slice $items }}
-    {{ end }}
-    {{ range $itemList }}
-      {{ $item := . }}
-      {{ $t := now }}
-      {{ with index $item "pubDate" }}{{ $t = time.AsTime . }}{{ end }}
-      {{ $combined = $combined | append (dict
-        "title"       (index $item "title")
-        "url"         (index $item "link")
-        "date"        $t
-        "dateUnix"    $t.Unix
-        "description" (index $item "description")
-        "tags"        slice
-        "source"      "substack"
-        "readingTime" 0
-      ) }}
-    {{ end }}
-  {{ end }}
+{{ range partial "substack-feed.html" (dict "feedURL" $feedURL) }}
+  {{ $combined = $combined | append (dict
+    "title"       .title
+    "url"         .url
+    "date"        .date
+    "dateUnix"    .dateUnix
+    "description" .description
+    "tags"        slice
+    "source"      "substack"
+    "readingTime" 0
+  ) }}
 {{ end }}
 
-{{/* ── 3. Sort by date descending ── */}}
 {{ $sorted := sort $combined "dateUnix" "desc" }}
 
 <div class="grid grid-cols-1 md:grid-cols-7 gap-3 py-2 md:items-start">
 
   {{/* ── Left: profile card ── */}}
-  <div class="md:col-span-2 md:sticky md:top-0 md:self-start">
-    <div class="bg-warm-100 dark:bg-darker drop-shadow-md p-2 rounded-lg">
-      <div class="flex flex-col justify-center">
-        {{ partial "profilePhoto" . }}
-        <div class="px-2 text-center">{{ partial "social" . }}</div>
-      </div>
-    </div>
-  </div>
+  {{ partial "profile-card" . }}
 
   {{/* ── Right: unified post listing ── */}}
   <div class="md:col-span-5 md:sticky md:top-0 md:self-start md:overflow-y-auto post-panel">
@@ -84,7 +53,6 @@
       {{ $isSubstack := eq (index . "source") "substack" }}
       <article class="mt-6 pb-5 border-b border-warm-200 dark:border-gray-700 last:border-0">
 
-        {{/* Title + optional Substack badge */}}
         {{ if $isSubstack }}
         <a href="{{ index . "url" }}" target="_blank" rel="noopener noreferrer"
            class="text-lg font-semibold text-warm-500 dark:text-gold-300 hover:text-warm-600 dark:hover:text-gold-500 hover:underline leading-snug">
@@ -100,25 +68,20 @@
         </a>
         {{ end }}
 
-        {{/* Date + reading time */}}
         <p class="text-xs text-warm-700 dark:text-gray-400 mt-0.5 mb-2">
           {{ (index . "date").Format "January 2, 2006" }}
           {{ with index . "readingTime" }}{{ if gt . 0 }}&thinsp;·&thinsp;{{ . }} min read{{ end }}{{ end }}
         </p>
 
-        {{/* Description — HTML-stripped + truncated for Substack, raw for blog */}}
         {{ with index . "description" }}
         <p class="text-sm text-warm-700 dark:text-gray-300 mt-0 leading-relaxed">
           {{ if $isSubstack }}{{ . | plainify | truncate 220 "…" }}{{ else }}{{ . }}{{ end }}
         </p>
         {{ end }}
 
-        {{/* Tags (blog only — Substack entries have an empty slice) */}}
         {{ with index . "tags" }}
         <div class="mt-2 flex flex-wrap gap-1">
-          {{ range . }}
-          <span class="tags">{{ . }}</span>
-          {{ end }}
+          {{ range . }}<span class="tags">{{ . }}</span>{{ end }}
         </div>
         {{ end }}
 
