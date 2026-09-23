@@ -3,8 +3,16 @@
   "icon": "bi bi-briefcase",
   "list": [
     {
+      "position": "Principal FDE/ Gen AI Architect",
+      "dates": "Jul 2026 - *Present*",
+      "company": "Oracle",
+      "details": [
+        "Senior Software Architect specializing in enterprise Generative AI and production distributed systems. Currently architecting high-throughput LLM pipelines, RAG frameworks, and high-performance vector retrieval architectures to help enterprise customers translate cutting-edge AI research into secure, scalable production software on cloud infrastructure."
+      ]
+    },
+    {
       "position": "Senior Tech Lead",
-      "dates": "2025 - *Present*",
+      "dates": "2025 - 2025",
       "company": "DocuSign",
       "details": [
         "Designed and implemented a graph-based deep neural network with a high-performance data processing framework handling 25B+ records daily in under 20 minutes.",
